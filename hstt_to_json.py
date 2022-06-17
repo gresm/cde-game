@@ -148,7 +148,6 @@ class HSTTToJSON:
         return self.nodes
 
     def add_current_node(self):
-        print(self.state.current_node_name)
         self.nodes.update(self.state.get_node())
         self.state.clear_current_node()
 
@@ -210,5 +209,4 @@ def dumps_file(file_name: str):
 def convert_file(hstt_path: str, json_path: str):
     with open(hstt_path, "r") as f:
         text = f.read()
-    with open(json_path, "w") as f:
-        f.write(dumps(text))
+        dumps_to_file(text, json_path)
