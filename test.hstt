@@ -1,0 +1,19 @@
+This is an entry node, the name of it is empty.
+!node_name
+#node_name
+Text to be displayed,
+That has multiline support.
+// It also supports comments.
+@next_node Option 1
+@other_next_node Option 2
+#next_node
+This text is displayed if the player selects the first option.
+#other_next_node
+This text is displayed if the player selects the second option.
+// Text nodes have more functionalities than just text.
+*
+For example text between stars,
+Will be shown as an alert.
+*
+!node_name
+When person is forced to be sent to different node, instead of # use !.
