@@ -63,6 +63,8 @@ The text above converts into this json file:
 """
 from enum import Enum
 
+import json
+
 
 class HSTTParserException(Exception):
     pass
@@ -174,3 +176,39 @@ class HSTTToJSON:
                 self.state.alert_text += f"{line}\n"
             else:
                 self.state.add_text(line)
+
+
+def convert_hstt_to_json(text: str):
+    """
+    Converts HSTT-like string to JSON-like object
+    :param text:
+    :return:
+    """
+    parser = HSTTToJSON(text)
+    return parser.convert()
+
+
+def dumps(text: str):
+    """
+    Converts HSTT-like string to JSON-like string.
+    :param text:
+    :return:
+    """
+    return json.dumps(convert_hstt_to_json(text), indent=4)
+
+
+def dumps_to_file(text: str, file_name: str):
+    with open(file_name, "w") as f:
+        f.write(dumps(text))
+
+
+def dumps_file(file_name: str):
+    with open(file_name, "r") as f:
+        return dumps(f.read())
+
+
+def convert_file(hstt_path: str, json_path: str):
+    with open(hstt_path, "r") as f:
+        text = f.read()
+    with open(json_path, "w") as f:
+        f.write(dumps(text))
