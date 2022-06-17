@@ -1,5 +1,5 @@
 """
-This file utility converts HSTT files to JSON files that can be used by the game.
+This file utility converts HSTT (HiSTory Tree format) files to JSON files that can be used by the game.
 HSTT files are text files containing dialogue trees.
 Format of such file looks like this:
 
@@ -17,7 +17,8 @@ This text is displayed if the player selects the first option.
 This text is displayed if the player selects the second option.
 // Text nodes have more functionalities than just text.
 *
-For example text between stars, will be shown as an alert.
+For example text between stars,
+Will be shown as an alert.
 *
 !node_name
 When person is forced to be sent to different node, instead of # use !.
@@ -84,6 +85,7 @@ class HSTTParserState:
         self.node_text = []
         self.node_goto = ""
         self.node_options = {}
+        self.alert_text = ""
 
     def add_text(self, text: str):
         self.node_text.append({"type": LineType.TEXT.value, "text": text})
@@ -139,12 +141,36 @@ class HSTTToJSON:
 
     def convert(self):
         for line in self.lines:
-            self.parse_line(line)
+            self.parse_line(line.replace("\\n", "\n"))
+        self.add_current_node()
         return self.nodes
+
+    def add_current_node(self):
+        print(self.state.current_node_name)
+        self.nodes.update(self.state.get_node())
+        self.state.clear_current_node()
 
     def parse_line(self, line: str):
         line_type = self.get_line_type(line)
-        if line_type == LineType.HEADER:
-            self.state.current_node = line[1:]
+        if line_type == LineType.COMMENT:
+            return
+        elif line_type == LineType.HEADER:
+            self.add_current_node()
+            self.state.current_node_name = line[1:]
         elif line_type == LineType.GOTO:
-            self.state.current_node = line[1:]
+            self.state.set_goto(line[1:])
+        elif line_type == LineType.OPTION:
+            splt = line[1:].split()
+            desc = " ".join(splt[1:]) if len(splt) > 1 else ""
+            self.state.add_option(splt[0], desc)
+        elif line_type == LineType.ALERT:
+            if self.state.searching_alert:
+                self.state.add_alert(self.state.alert_text[:-1])
+                self.state.alert_text = ""
+
+            self.state.searching_alert = not self.state.searching_alert
+        else:
+            if self.state.searching_alert:
+                self.state.alert_text += f"{line}\n"
+            else:
+                self.state.add_text(line)
