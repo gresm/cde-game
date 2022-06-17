@@ -29,11 +29,7 @@ The text above converts into this json file:
             "text": [
                 {"type": "text", "text": "This is an entry node, the name of it is empty."}
             ],
-            "goto": {
-                "destination": "node_name",
-                "text": ""
-            }
-
+            "goto": "node_name"
         },
         "node_name": {
             "text": [
@@ -51,12 +47,10 @@ The text above converts into this json file:
                     {
                         "type": "goto", "destination": "next_node",
                         "text": "When person is forced to be sent to different node, instead of # use !"
-                    }
+                    },
+                    {"type": "text", "text": "When person is forced to be sent to different node, instead of # use !"}
             ],
-            "goto": {
-                    "destination": "next_node",
-                    "text": "When person is forced to be sent to different node, instead of # use !"
-            }
+            "goto": "destination": "next_node"
         },
         "other_next_node": {
             "text": [
@@ -87,10 +81,8 @@ class HSTTParserState:
     def __init__(self):
         self.current_node_name = ""
         self.searching_alert = False
-        self.current_text = ""
         self.node_text = []
         self.node_goto = ""
-        self.node_goto_text = ""
         self.node_options = {}
 
     def add_text(self, text: str):
@@ -98,6 +90,30 @@ class HSTTParserState:
 
     def add_alert(self, alert: str):
         self.node_text.append({"type": LineType.ALERT.value, "text": alert})
+
+    def add_option(self, destination: str, description: str):
+        self.node_options[destination] = description
+
+    def set_goto(self, goto: str):
+        self.node_goto = goto
+
+    def get_node(self):
+        ret = dict()
+
+        ret["text"] = self.node_text
+        if self.node_goto:
+            ret["goto"] = self.node_goto
+        if self.node_options:
+            ret["options"] = self.node_options
+
+        return {self.current_node_name: ret}
+
+    def clear_current_node(self):
+        self.node_text = []
+        self.node_goto = ""
+        self.node_options = {}
+        # This is a hack to make sure that if something goes wrong, we don't override entry node (with empty name).
+        self.current_node_name = " "
 
 
 class HSTTToJSON:
