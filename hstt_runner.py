@@ -4,6 +4,10 @@ Utility script to run HSTT formatted json files.
 from __future__ import annotations
 
 
+class HSTTParserException(Exception):
+    pass
+
+
 class TextLine:
     """
     Class for text lines.
@@ -116,15 +120,29 @@ class Story:
         """
         Parses story from dictionary.
         """
-        return cls({
+        ret = cls({
             name: StoryNode.parse(data[name]) for name in data
         })
+        ret.validate()
+        return ret
 
     def validate(self):
         """
         Validates story.
         """
-        pass
+        for node_name in self.nodes:
+            node = self.nodes[node_name]
+            if node.goto and node_name not in self.nodes:
+                raise HSTTParserException(f"Node {node_name} has goto {node.goto} but there is not such location.")
+
+            if node.options:
+                for option in node.options.options:
+                    if option not in self.nodes:
+                        raise HSTTParserException(f"Node {node_name} has option {option.text} -> {option.goto} but "
+                                                  f"there is not such location.")
+
+        if "" not in self.nodes:
+            raise HSTTParserException("There is no start node.")
 
 
 class HSTTRunner:
