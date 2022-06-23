@@ -71,6 +71,9 @@ class NodeOptions:
     def __init__(self, options: list[OptionElement]):
         self.options = options
 
+    def __bool__(self):
+        return len(self.options) > 0
+
     def __repr__(self):
         return f'[{", ".join([str(option) for option in self.options])}]'
 
@@ -141,8 +144,28 @@ class Story:
                         raise HSTTParserException(f"Node {node_name} has option {option.text} -> {option.goto} but "
                                                   f"there is not such location.")
 
+            if node.goto and node.options:
+                raise HSTTParserException(f"Collision in: {node_name}. The node has both goto and options. "
+                                          f"This behaviour is not supported.")
+
         if "" not in self.nodes:
             raise HSTTParserException("There is no start node.")
+
+
+class HSTTRunnerCurrentNode:
+    def __init__(self, runner: HSTTRunner, text: NodeText, options: NodeOptions):
+        self.runner = runner
+        self.text = text
+        self.options = options
+        self.selected = None
+
+    def select(self, option: str):
+        """
+        Selects option.
+        """
+        if option not in self.options.options:
+            raise HSTTParserException(f"Option {option} is not available.")
+        self.selected = option
 
 
 class HSTTRunner:
@@ -160,6 +183,3 @@ class HSTTRunner:
     def __next__(self):
         if self.current_node.goto:
             self.current_node = self.story.nodes[self.current_node.goto]
-
-    def select(self, option: str):
-        self.selected_option = option
