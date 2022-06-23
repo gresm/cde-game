@@ -108,6 +108,9 @@ class Story:
     def __repr__(self):
         return f'{self.nodes}'
 
+    def __iter__(self):
+        return HSTTRunner(self)
+
     @classmethod
     def parse(cls, data: dict[str, dict[str, list[dict[str, str]] | dict[str, str]] | str]):
         """
@@ -117,6 +120,28 @@ class Story:
             name: StoryNode.parse(data[name]) for name in data
         })
 
+    def validate(self):
+        """
+        Validates story.
+        """
+        pass
+
 
 class HSTTRunner:
-    pass
+    """
+    Runner class, an iterator utility for HSTT.
+    """
+    def __init__(self, story: Story):
+        self.story = story
+        self.current_node = self.story.nodes[""]
+        self.selected_option: str | None = None
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.current_node.goto:
+            self.current_node = self.story.nodes[self.current_node.goto]
+
+    def select(self, option: str):
+        self.selected_option = option
