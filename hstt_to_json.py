@@ -210,3 +210,32 @@ def convert_file(hstt_path: str, json_path: str):
     with open(hstt_path, "r") as f:
         text = f.read()
         dumps_to_file(text, json_path)
+
+def fix_json_encoding(obj, encoding1: str = "latin1", encoding2: str = "utf-8"):
+    """
+    When using non-standard characters, json may incorrectly parse the characters. This function can fix the issue.
+    """
+    # Based on: https://stackoverflow.com/a/50315873/15140144
+    def _visit_list(l, e1, e2):
+        return [_visit(item, e1, e2) for item in l]
+
+    def _visit_dict(d, e1, e2):
+        return {_visit(k, e1, e2): _visit(v, e1, e2) for k, v in d.items()}
+
+    def _visit_str(s, e1, e2):
+        return s.encode(e1).decode(e2)
+
+    def _visit(node, e1, e2):
+        funcs = {
+            list: _visit_list,
+            dict: _visit_dict,
+            str: _visit_str,
+        }
+        func = funcs.get(type(node))
+        if func:
+            return func(node, e1, e2)
+        else:
+            return node
+    
+    return _visit(obj, encoding1, encoding2)
+    
