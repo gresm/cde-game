@@ -204,7 +204,7 @@ def dumps(text: str):
     :param text:
     :return:
     """
-    return json.dumps(parse(text), indent=4)
+    return json.dumps(parse(text), indent=4, ensure_ascii=False)
 
 
 def parse_file(file: str):
@@ -220,4 +220,4 @@ def dumps_to_file(text: str, output_file: str):
 
     
 def convert_file(input_file: str, output_file: str):
-    return _write_to_file(output_file, parse_file(input_file))
+    return _write_to_file(output_file, dumps_file(input_file))
