@@ -177,7 +177,7 @@ class HSTTToJSON:
                 self.state.add_text(line)
 
 
-def convert_hstt_to_json(text: str):
+def parse(text: str):
     """
     Converts HSTT-like string to JSON-like object
     :param text:
@@ -185,6 +185,17 @@ def convert_hstt_to_json(text: str):
     """
     parser = HSTTToJSON(text)
     return parser.convert()
+   
+
+def _load_file(file: str):
+    with open(file, encoding="utf-8") as f:
+        return f.read()
+
+
+def _write_to_file(file: str, text: str):
+    with open(file, "w", encoding="utf-8") as f:
+        f.write(text)
+        return text
 
 
 def dumps(text: str):
@@ -193,20 +204,20 @@ def dumps(text: str):
     :param text:
     :return:
     """
-    return json.dumps(convert_hstt_to_json(text), indent=4)
+    return json.dumps(parse(text), indent=4, ensure_ascii=False)
 
 
-def dumps_to_file(text: str, file_name: str):
-    with open(file_name, "w") as f:
-        f.write(dumps(text))
+def parse_file(file: str):
+    return parse(_load_file(file))
 
 
-def dumps_file(file_name: str):
-    with open(file_name, "r") as f:
-        return dumps(f.read())
+def dumps_file(file: str):
+    return dumps(_load_file(file))
 
 
-def convert_file(hstt_path: str, json_path: str):
-    with open(hstt_path, "r") as f:
-        text = f.read()
-        dumps_to_file(text, json_path)
+def dumps_to_file(text: str, output_file: str):
+    return _write_to_file(output_file, dumps(text))
+
+    
+def convert_file(input_file: str, output_file: str):
+    return _write_to_file(output_file, dumps_file(input_file))
