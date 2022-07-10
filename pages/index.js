@@ -18,7 +18,7 @@ function Home() {
         getApiData();
     }, []);
 
-    return <iframe className={styles.fullscreen} src='https://www.diki.pl' />;
+    return <iframe className={styles.fullscreen} src='https://www.example.com' />;
 }
 
 export default Home
