@@ -6,7 +6,7 @@ import { React, Component } from 'react';
 
 function GameRunner({ story, lib }) {
     return (<>
-        <div hidden={true} dangerouslySetInnerHTML={{ "__html": lib }} />
+        <div dangerouslySetInnerHTML={{ "__html": lib }} />
         <div className={styles.fullscreen} id="game-div" />
         <div story={story} id="story" />
     </>)
@@ -39,7 +39,6 @@ class Home extends Component {
 
     componentDidMount() {
         if (!this.state.loaded) {
-            console.log("Reloading...")
             this.getStory()
             this.getLibSrc()
         }
