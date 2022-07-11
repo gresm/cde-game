@@ -5,7 +5,7 @@ import { React, Component } from 'react';
 
 
 function GameRunner({ story, lib }) {
-    return <script story={story} dangerouslySetInnerHTML={{ "__html": lib }}></script>
+    return <div story={story} dangerouslySetInnerHTML={{ "__html": lib }}></div>
 }
 
 
@@ -27,7 +27,7 @@ class Home extends Component {
     }
 
     getLibSrc = async () => {
-        fetch(window.location.origin + "/game.js")
+        fetch(window.location.origin + "/app.html")
             .then((response) => response.text())
             .then((text) => this.setState({ lib: text }))
             .catch((reason) => { console.log(reason) })
