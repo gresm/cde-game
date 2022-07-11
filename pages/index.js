@@ -42,7 +42,7 @@ class Home extends Component {
     }
 
     render() {
-        return <div className={styles.fullscreen} id="game-div"><GameRunner story={this.state.story} lib={this.state.lib} /></div>;
+        return <div className={styles.fullscreen}><GameRunner story={this.state.story} lib={this.state.lib} /><div className={styles.fullscreen} id="game-div"></div></div>;
     }
 }
 
