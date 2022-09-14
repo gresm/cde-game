@@ -19,7 +19,7 @@ export class StoriesMenager {
         if (name in this.stories){
             return this.stories[name]
         }
-        return ""
+        return undefined
     }
 }
 

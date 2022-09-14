@@ -14,5 +14,10 @@ var loader = getLoader()
  * @param { NextApiResponse } res 
  */
 export default function listStories(req, res) {
-    res.status(200).json(loader.getStory(req.query.story))
+    var story = loader.getStory(req.query.story)
+    if (story !== undefined) {
+        res.status(200).json(story)
+    } else {
+        res.status(404).json({"error": "not found", "name": req.query.story})
+    }
 }
