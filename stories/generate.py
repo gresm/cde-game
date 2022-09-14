@@ -16,7 +16,7 @@ input_dir = cwd / "stories"
 
 def main():
     stories = {}
-    visible = []
+    visible = {}
 
     for file in input_dir.iterdir():
         if file.suffix not in {'.json', ".hstt"}:
@@ -26,12 +26,17 @@ def main():
         name = file.name.split(".")[0]
         is_hidden = name.startswith("_")
         real_name = name[1:] if is_hidden else name
+        content = file.read_text()
+
+        if is_hstt:
+            parsed = parse(content)
+        else:
+            parsed = json.loads(content)
 
         if not is_hidden:
-            visible.append(real_name)
+            visible[real_name] = parsed["title"]
         
-        content = file.read_text()
-        stories[real_name] = parse(content) if is_hstt else json.loads(content)
+        stories[real_name] = parsed
     
     out = {"index": visible, "stories": stories}
     out_text = json.dumps(out)
