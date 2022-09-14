@@ -4,11 +4,11 @@ import { React, Component } from 'react';
 
 class Home extends Component {
     componentDidMount() {
-        document.location.pathname = "/app.html"
+        // Running on render
     }
 
     render() {
-        return <a>Redirecting....</a>
+        return <></>
     }
 }
 
