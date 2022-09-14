@@ -21,6 +21,10 @@ export class StoriesMenager {
         }
         return undefined
     }
+
+    storyExists(name) {
+        return name in this.stories
+    }
 }
 
 let defaultMenager

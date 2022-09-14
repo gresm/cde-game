@@ -26,6 +26,10 @@ export class StoriesMenager {
         }
         return ""
     }
+
+    public storyExists(name: string) : boolean {
+        return name in this.stories
+    }
 }
 
 let defaultMenager: StoriesMenager

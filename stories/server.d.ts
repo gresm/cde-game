@@ -15,6 +15,8 @@ export class StoriesMenager {
     public collectStoryNames() : {[name: string]: string}
 
     public getStory(name: string) : string
+
+    public storyExists(name: string) : boolean
 }
 
 declare let defaultMenager: StoriesMenager
