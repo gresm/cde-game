@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "npm run pre-build && next dev",
+    "build": "npm run pre-build && next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "npm run pre-build && next lint",
+    "pre-build": "python3 stories/generate.py"
   },
   "dependencies": {
     "next": "12.2.0",
@@ -14,6 +15,8 @@
     "react-dom": "18.2.0"
   },
   "devDependencies": {
+    "@types/node": "^18.7.17",
+    "@types/react": "^18.0.19",
     "eslint": "^8.19.0",
     "eslint-config-next": "12.2.0"
   }
