@@ -1,7 +1,7 @@
 import { data } from "./stories_json"
 
 export interface StoriesData {
-    index: string[]
+    index: {[name: string]: string}
     stories: {[name: string]: string}
 }
 
@@ -12,7 +12,7 @@ export class StoriesMenager {
 
     constructor(data: StoriesData)
 
-    public collectStoryNames() : string[]
+    public collectStoryNames() : {[name: string]: string}
 
     public getStory(name: string) : string
 }

@@ -1,13 +1,13 @@
 import { data } from "./stories_json"
 
 export interface StoriesData {
-    index: string[]
+    index: {[name: string]: string}
     stories: {[name: string]: string}
 }
 
 export class StoriesMenager {
     data: StoriesData
-    indexes: string[]
+    indexes: {[name: string]: string}
     stories: {[name: string]: string}
 
     constructor(data: StoriesData) {
@@ -16,7 +16,7 @@ export class StoriesMenager {
         this.stories = data.stories
     }
 
-    public collectStoryNames() : string[] {
+    public collectStoryNames() : {[name: string]: string} {
         return this.indexes
     }
 
