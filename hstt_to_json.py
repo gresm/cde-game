@@ -65,6 +65,8 @@ from enum import Enum
 
 import json
 
+__version__ = (1, 0, 0)
+
 
 class HSTTParserException(Exception):
     pass
@@ -185,7 +187,7 @@ def parse(text: str):
     """
     parser = HSTTToJSON(text)
     return parser.convert()
-   
+
 
 def _load_file(file: str):
     with open(file, encoding="utf-8") as f:
@@ -218,6 +220,6 @@ def dumps_file(file: str):
 def dumps_to_file(text: str, output_file: str):
     return _write_to_file(output_file, dumps(text))
 
-    
+
 def convert_file(input_file: str, output_file: str):
     return _write_to_file(output_file, dumps_file(input_file))
