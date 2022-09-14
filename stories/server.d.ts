@@ -19,4 +19,4 @@ export class StoriesMenager {
 
 declare let defaultMenager: StoriesMenager
 
-export function getLoader()
+export function getLoader() : StoriesMenager
