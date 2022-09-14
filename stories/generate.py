@@ -4,7 +4,7 @@ import json
 from hstt_to_json import parse
 
 output_file_template = """// This file was automatically generated. Don't change it.
-export var data = JSON.parse('{}')
+export var data = JSON.parse(String.raw`{}`)
 """
 
 current_file = Path(__file__)
