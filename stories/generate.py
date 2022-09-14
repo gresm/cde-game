@@ -10,7 +10,7 @@ export var data = JSON.parse('{}')
 current_file = Path(__file__)
 cwd = current_file.parent
 
-out_file = cwd / "stories.json.js"
+out_file = cwd / "stories_json.js"
 input_dir = cwd / "stories"
 
 
