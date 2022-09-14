@@ -66,7 +66,7 @@ from enum import Enum
 
 import json
 
-__version__ = (1, 1, 0)
+__version__ = (1, 1, 1)
 
 
 class HSTTParserException(Exception):
@@ -126,8 +126,12 @@ class HSTTParserState:
 class HSTTToJSON:
     def __init__(self, text: str):
         self.lines = text.split("\n")
-        self.title = self.lines[0]
-        self.text = text[len(self.title) + 1 :]
+        if self.get_line_type(self.lines[0]) == LineType.TEXT:
+            self.title = self.lines[0]
+            self.text = text[len(self.title) + 1 :]
+        else:
+            self.title = ""
+            self.text = text
         self.state = HSTTParserState()
         self.nodes = {}
 
