@@ -1,5 +1,3 @@
-import { data } from "./stories_json"
-
 export interface StoriesData {
     index: {[name: string]: string}
     stories: {[name: string]: string}
@@ -18,7 +16,5 @@ export class StoriesMenager {
 
     public storyExists(name: string) : boolean
 }
-
-declare let defaultMenager: StoriesMenager
 
 export function getLoader() : StoriesMenager
