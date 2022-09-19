@@ -1,20 +1,27 @@
 import { getLoader } from "../../stories/server"
 import { Game } from "../../components/game"
-import { useRouter } from "next/router"
 
-export default function PlayGame({ props }) {
-    var router = useRouter()
-    var story = getLoader().getStory(router.query.game)
+/**
+ * @typedef { import("next").NextApiRequest } NextApiRequest
+ * @typedef { import("next").NextApiResponse } NextApiResponse
+ * @typedef { import("next").GetServerSidePropsContext } GetServerSidePropsContext
+ */
 
-    if (story === undefined) {
+export default function PlayGame({ story }) {
+    if (typeof story === "undefined") {
         return "Error"
     } else {
         return <Game />
     }
 }
 
-export function getServerSideProps({ req, res }) {
+/**
+ * 
+ * @param { GetServerSidePropsContext } ctx 
+ * @returns 
+ */
+export function getServerSideProps(ctx) {
     return {
-        props: {}
+        props: {story: getLoader().getStory(ctx.query.game)},
     }
 }
