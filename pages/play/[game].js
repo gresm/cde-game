@@ -1,5 +1,5 @@
 import { getLoader } from "../../stories/server"
-import { Game } from "../components/game"
+import { Game } from "../../components/game"
 import { useRouter } from "next/router"
 
 export default function PlayGame({ props }) {
