@@ -5,3 +5,48 @@
     bottom: 0px;
     left: 0px;
 }
+
+.background {
+    background-color: #300a24;
+    font-family: monospace;
+    font-size: 16;
+    letter-spacing: 0px;
+    line-height: 1;
+}
+
+.normal-text {
+    color: white;
+}
+
+.special-green-color {
+    color: #26975c
+}
+
+.special-blue-color {
+    color: #12488b
+}
+
+.cursor {
+    width: 9px;
+    height: 18px;
+    background-color: white;
+    animation: cursorAnimation 1s infinite;
+}
+
+@keyframes cursorAnimation {
+    0% {
+        background-color: white;
+    }
+
+    49.999% {
+        background-color: white;
+    }
+
+    50% {
+        background-color: #300a24;
+    }
+
+    99.999% {
+        background-color: #300a24;
+    }
+}

@@ -10,7 +10,7 @@ text:
   white: #ffffff
   background: #300a24
   special-green: #269f5c
-  special-blue: $12488b
+  special-blue: #12488b
 
 background:
  color: #300a24
