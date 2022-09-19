@@ -2,7 +2,7 @@ import { getLoader } from "../../stories/server"
 import { Game } from "../components/game"
 import { useRouter } from "next/router"
 
-export default function PlayGame() {
+export default function PlayGame({ props }) {
     var router = useRouter()
     var story = getLoader().getStory(router.query.game)
 
@@ -10,5 +10,11 @@ export default function PlayGame() {
         return "Error"
     } else {
         return <Game />
+    }
+}
+
+export function getServerSideProps({ req, res }) {
+    return {
+        props: {}
     }
 }
