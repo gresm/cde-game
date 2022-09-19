@@ -10,7 +10,10 @@ export function ConsoleLine({ text, isInput = false, children = undefined }) {
         </div>
     }
     else {
-        return <div className='special-blue-color'>{text}</div>
+        return <div className="inline-div">
+            <div className='special-blue-color'>{text}</div>
+            <div className='normal-text'>{children}</div>
+        </div>
     }
 }
 
