@@ -1,4 +1,4 @@
-export function ConsoleLine({ text, isInput = false }) {
+export function ConsoleLine({ text, isInput = false, children = undefined }) {
     if (isInput) {
         return <div className="inline-div">
             <div className='special-green-color'>cde@cde-game-web</div>
@@ -6,6 +6,7 @@ export function ConsoleLine({ text, isInput = false }) {
             <div className='special-blue-color'>~</div>
             <div className='normal-text'>$ </div>
             <div className='normal-text'>{text}</div>
+            <div className='normal-text'>{children}</div>
         </div>
     }
     else {

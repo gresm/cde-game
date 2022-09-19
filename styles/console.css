@@ -26,6 +26,8 @@
     height: 18px;
     background-color: white;
     animation: cursorAnimation 1s infinite;
+    position: relative;
+    top: 2px;
 }
 
 @keyframes cursorAnimation {
