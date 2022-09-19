@@ -1,29 +1,24 @@
-.fullscreen {
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    bottom: 0px;
-    left: 0px;
-}
-
 .background {
     background-color: #300a24;
     font-family: monospace;
-    font-size: 16;
+    font-size: 16px;
     letter-spacing: 0px;
     line-height: 1;
 }
 
 .normal-text {
     color: white;
+    display: inherit;
 }
 
 .special-green-color {
-    color: #26975c
+    color: #26975c;
+    display: inherit;
 }
 
 .special-blue-color {
-    color: #12488b
+    color: #12488b;
+    display: inherit;
 }
 
 .cursor {
@@ -43,10 +38,10 @@
     }
 
     50% {
-        background-color: #300a24;
+        background-color: transparent;
     }
 
     99.999% {
-        background-color: #300a24;
+        background-color: transparent;
     }
 }
