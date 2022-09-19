@@ -1,0 +1,24 @@
+text:
+ font:
+  name: Monospace
+  size: 16
+  line-distance: 0px
+  letter-distance: 0px
+
+ antialiasing: true
+ colors:
+  white: #ffffff
+  background: #300a24
+  special-green: #269f5c
+  special-blue: $12488b
+
+background:
+ color: #300a24
+
+cursor:
+ size: 9px, 18px
+ blinking-speed: 1s
+ colors:
+  visible: #ffffff
+  invisible: #300a24
+ 
