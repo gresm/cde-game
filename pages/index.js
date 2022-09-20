@@ -2,6 +2,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link';
 import { React, Component } from 'react';
+import { ConsoleLine, Cursor } from '../components/console'
 
 
 const gameEndpoint = "/play/"
@@ -20,7 +21,7 @@ class StoryEntry extends Component {
     }
 
     render() {
-        return <a href={this.state.url}>{this.state.name}</a>
+        return <ConsoleLine><a href={this.state.url}>{this.state.name}</a> - ({this.state.gameID})</ConsoleLine>
     }
 }
 
@@ -98,14 +99,27 @@ class StoriesList extends Component {
     }
 }
 
+class InteractveSelection extends Component {
+    constructor(props) {
+        super(props)
+    }
+
+
+    render() {
+        return <></>
+    }
+}
+
 class Home extends Component {
     render() {
-        return <>
+        return <div className='background fullscreen' onKeyDown={this.onKeyDown}>
             <Head>
                 <title>CDE game hub</title>
             </Head>
+            <ConsoleLine text="ls --games" isInput={true} />
             <StoriesList />
-        </>
+            <ConsoleLine isInput={true}><Cursor /></ConsoleLine>
+        </div>
     }
 }
 
