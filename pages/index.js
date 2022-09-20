@@ -125,7 +125,6 @@ class InteractveSelection extends Component {
     }
 
     /**
-     * 
      * @param {KeyboardEvent} ev 
      */
     onKeyPressed(ev) {
@@ -152,7 +151,7 @@ class Home extends Component {
         this.listeners = []
 
         var that = this
-        this.bindedKeydownListener = (ev) => {that.handleKeyDown(ev);console.log("test")}
+        this.bindedKeydownListener = (ev) => {that.handleKeyDown(ev)}
     }
 
     /**
@@ -165,9 +164,6 @@ class Home extends Component {
     }
 
     handleKeyDown(ev) {
-        //console.log(this)
-        //console.log(ev)
-        // this.keysPressed[this.keysPressed.length] = ev
         this.listeners.forEach(lst => {
             lst(ev)
         });
