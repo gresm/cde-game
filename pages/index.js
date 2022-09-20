@@ -2,7 +2,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link';
 import { React, Component } from 'react';
-import { ConsoleLine, Cursor } from '../components/console'
+import { ConsoleLine, Cursor, Container } from '../components/console'
 
 
 const gameEndpoint = "/play/"
@@ -116,9 +116,11 @@ class Home extends Component {
             <Head>
                 <title>CDE game hub</title>
             </Head>
-            <ConsoleLine text="ls --games" isInput={true} />
-            <StoriesList />
-            <ConsoleLine isInput={true}><Cursor /></ConsoleLine>
+            <Container>
+                <ConsoleLine text="ls --games" isInput={true} />
+                <StoriesList />
+                <ConsoleLine isInput={true}><Cursor /></ConsoleLine>
+            </Container>
         </div>
     }
 }

@@ -20,3 +20,9 @@ export function ConsoleLine({ text, isInput = false, children = undefined }) {
 export function Cursor() {
     return <div className='cursor'></div>
 }
+
+export function Container({ children }) {
+    return <div className="game-container">
+        {children}
+    </div>
+}
