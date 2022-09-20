@@ -4,10 +4,10 @@
     font-size: 20px;
     letter-spacing: 0px;
     line-height: 1;
+    color: white;
 }
 
 .normal-text {
-    color: white;
     display: inherit;
 }
 

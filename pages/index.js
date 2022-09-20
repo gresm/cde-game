@@ -82,14 +82,15 @@ class StoriesList extends Component {
 
     render() {
         if (this.inProcess()) {
-            return <a>Loading...</a>
+            return <ConsoleLine>Loading...</ConsoleLine>
         } else if (this.didFail()) {
-            return <a>Failed to fetch data.</a>
+            return <ConsoleLine color='red'>Failed to load data.</ConsoleLine>
         }
         else if (this.didLoad()) {
             var games = this.getNames()
 
             return <div>
+                <ConsoleLine>Select an option:</ConsoleLine>
                 {Object.keys(games).map((value, key) => {
                     return <StoryEntry name={games[value]} key={key} gameID={value} />
                 })}

@@ -1,19 +1,19 @@
-export function ConsoleLine({ text, isInput = false, children = undefined }) {
+export function ConsoleLine({ text, isInput = false, children = undefined, color="inherit" }) {
     if (isInput) {
-        return <div className="inline-div">
+        return <><div className="inline-div">
             <div className='special-green-color'>cde@cde-game-web</div>
             <div className='normal-text'>:</div>
             <div className='special-blue-color'>~</div>
             <div className='normal-text'>$ </div>
-            <div className='normal-text'>{text}</div>
-            <div className='normal-text'>{children}</div>
-        </div>
+            <div className='normal-text' style={{color: color}}>{text}</div>
+            <div className='normal-text' style={{color: color}}>{children}</div>
+        </div><br /></>
     }
     else {
-        return <div className="inline-div">
-            <div className='special-blue-color'>{text}</div>
-            <div className='normal-text'>{children}</div>
-        </div>
+        return <><div className="inline-div">
+            <div className='normal-text' style={{color: color}}>{text}</div>
+            <div className='normal-text' style={{color: color}}>{children}</div>
+        </div><br /></>
     }
 }
 
