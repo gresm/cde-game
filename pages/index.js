@@ -132,7 +132,7 @@ class InteractveSelection extends Component {
             this.updateState("text", this.state.text + ev.key)
         }
         else if (ev.key === "Backspace") {
-            this.updateState("text", this.state.text.substring(0, this.state.text.length - 2))
+            this.updateState("text", this.state.text.substring(0, this.state.text.length - 1))
         }
     }
 
