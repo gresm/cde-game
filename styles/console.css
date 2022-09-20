@@ -28,6 +28,7 @@
     animation: cursorAnimation 1s infinite;
     position: relative;
     top: 2px;
+    display: inherit;
 }
 
 @keyframes cursorAnimation {

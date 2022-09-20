@@ -1,5 +1,6 @@
-export function ConsoleLine({ text, isInput = false, children = undefined, color="inherit", style }) {
+export function ConsoleLine({ text, isInput = false, children = undefined, color="inherit", style, newLine = true }) {
     var text_style = {color: color, ...style}
+    var br = (newLine) ? <br /> : undefined
 
     if (isInput) {
         return <><div className="inline-div">
@@ -9,13 +10,13 @@ export function ConsoleLine({ text, isInput = false, children = undefined, color
             <div className='normal-text'>$ </div>
             <div className='normal-text' style={text_style}>{text}</div>
             <div className='normal-text' style={text_style}>{children}</div>
-        </div><br /></>
+        </div>{br}</>
     }
     else {
         return <><div className="inline-div">
             <div className='normal-text' style={text_style}>{text}</div>
             <div className='normal-text' style={text_style}>{children}</div>
-        </div><br /></>
+        </div>{br}</>
     }
 }
 

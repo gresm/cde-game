@@ -103,24 +103,90 @@ class StoriesList extends Component {
 class InteractveSelection extends Component {
     constructor(props) {
         super(props)
+
+        props.bindListener(this, this.onKeyPressed)
+        this.state = {
+            text: ""
+        }
+
+        this.mounted = false
     }
 
+    updateState(name, value) {
+        var state = this.state
+        state[name] = value
+        if (this.mounted) {
+            this.setState(state)
+        }
+    }
+
+    componentDidMount() {
+        this.mounted = true
+    }
+
+    /**
+     * 
+     * @param {KeyboardEvent} ev 
+     */
+    onKeyPressed(ev) {
+        if (ev.key.length === 1) {
+            this.updateState("text", this.state.text + ev.key)
+        }
+        else if (ev.key === "Backspace") {
+            this.updateState("text", this.state.text.substring(0, this.state.text.length - 2))
+        }
+    }
 
     render() {
-        return <></>
+        return <ConsoleLine newLine={false}>{this.state.text}</ConsoleLine>
     }
 }
 
 class Home extends Component {
+
+    constructor(props) {
+        super(props)
+        /**
+         * @type { [{(ev: KeyboardEvent) => undefined}] }
+         */
+        this.listeners = []
+
+        var that = this
+        this.bindedKeydownListener = (ev) => {that.handleKeyDown(ev);console.log("test")}
+    }
+
+    /**
+     * 
+     * @param {*} obj Listening object
+     * @param {{(ev: KeyboardEvent) => undefined}} func Event listener
+     */
+    bindListener(obj, func) {
+        this.listeners.push(func.bind(obj))
+    }
+
+    handleKeyDown(ev) {
+        //console.log(this)
+        //console.log(ev)
+        // this.keysPressed[this.keysPressed.length] = ev
+        this.listeners.forEach(lst => {
+            lst(ev)
+        });
+    }
+
+    componentDidMount() {
+        document.removeEventListener("keydown", this.bindedKeydownListener)
+        document.addEventListener("keydown", this.bindedKeydownListener)
+    }
+
     render() {
-        return <div className='background fullscreen' onKeyDown={this.onKeyDown}>
+        return <div className='background fullscreen'>
             <Head>
                 <title>CDE game hub</title>
             </Head>
             <Container>
                 <ConsoleLine text="ls --games" isInput={true} />
                 <StoriesList />
-                <ConsoleLine isInput={true}><Cursor /></ConsoleLine>
+                <ConsoleLine isInput={true}><InteractveSelection bindListener={this.bindListener.bind(this)} /><Cursor /></ConsoleLine>
             </Container>
         </div>
     }
