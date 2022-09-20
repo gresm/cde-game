@@ -90,7 +90,7 @@ class StoriesList extends Component {
             var games = this.getNames()
 
             return <div>
-                <ConsoleLine>Select an option:</ConsoleLine>
+                <ConsoleLine>Select an option (Click the name or type the option):</ConsoleLine>
                 {Object.keys(games).map((value, key) => {
                     return <StoryEntry name={games[value]} key={key} gameID={value} />
                 })}
@@ -133,6 +133,15 @@ class InteractveSelection extends Component {
         }
         else if (ev.key === "Backspace") {
             this.updateState("text", this.state.text.substring(0, this.state.text.length - 1))
+        }
+        else if (ev.key === "Enter") {
+            this.onSubmit()
+        }
+    }
+
+    onSubmit() {
+        if (this.mounted) {
+            window.location.pathname = gameEndpoint + this.state.text
         }
     }
 
