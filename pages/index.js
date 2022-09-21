@@ -1,13 +1,46 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link';
-import { React, Component } from 'react';
+import { React, Component, createContext } from 'react';
 import { ConsoleLine, Cursor, Container } from '../components/console'
 
 
 const gameEndpoint = "/play/"
 const apiEndpoint = "/api/"
 const apiListStories = apiEndpoint + "list-stories"
+
+var storyListContext = createContext({
+    vals: {},
+    names: [],
+    updateNames: (val) => {}
+})
+
+export class SlContextProvider extends Component {
+    constructor(props) {
+        super(props)
+
+        this.updateNames = (val) => {
+            var st = this.state
+            st.vals = val
+            st.names = Object.keys(val)
+            this.setState(st)
+        }
+
+        this.state = {
+            vals: {},
+            names: [],
+            updateNames: this.updateNames.bind(this)
+        }
+    }
+
+    render() {
+        return (
+            <storyListContext.Provider value={this.state}>
+                {this.props.children}
+            </storyListContext.Provider>
+        )
+    }
+}
 
 class StoryEntry extends Component {
     constructor({ name, gameID, ...props }) {
@@ -26,10 +59,11 @@ class StoryEntry extends Component {
 }
 
 class StoriesList extends Component {
+    static contextType = storyListContext
+
     constructor(props) {
         super(props)
         this.state = {
-            names: {},
             loaded: false,
             failed: false
         }
@@ -37,19 +71,18 @@ class StoriesList extends Component {
 
     setNames(names) {
         this.setState({
-            names: names,
             loaded: true,
             failed: false
         })
+        this.context.updateNames(names)
     }
 
     getNames() {
-        return this.state.names
+        return this.context.vals
     }
 
     fetchFailed() {
         this.setState({
-            names: {},
             loaded: false,
             failed: true
         })
@@ -160,7 +193,7 @@ class Home extends Component {
         this.listeners = []
 
         var that = this
-        this.bindedKeydownListener = (ev) => {that.handleKeyDown(ev)}
+        this.bindedKeydownListener = (ev) => { that.handleKeyDown(ev) }
     }
 
     /**
@@ -188,11 +221,13 @@ class Home extends Component {
             <Head>
                 <title>CDE game hub</title>
             </Head>
-            <Container>
-                <ConsoleLine text="ls --games" isInput={true} />
-                <StoriesList />
-                <ConsoleLine isInput={true}><InteractveSelection bindListener={this.bindListener.bind(this)} /><Cursor /></ConsoleLine>
-            </Container>
+            <SlContextProvider>
+                <Container>
+                    <ConsoleLine text="ls --games" isInput={true} />
+                    <StoriesList />
+                    <ConsoleLine isInput={true}><InteractveSelection bindListener={this.bindListener.bind(this)} /><Cursor /></ConsoleLine>
+                </Container>
+            </SlContextProvider>
         </div>
     }
 }
