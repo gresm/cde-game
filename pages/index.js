@@ -134,12 +134,15 @@ class StoriesList extends Component {
 }
 
 class InteractveSelection extends Component {
+    static contextType = storyListContext
+
     constructor(props) {
         super(props)
 
         props.bindListener(this, this.onKeyPressed)
         this.state = {
-            text: ""
+            text: "",
+            currentlySelecting: -1
         }
 
         this.mounted = false
@@ -160,6 +163,32 @@ class InteractveSelection extends Component {
     /**
      * @param {KeyboardEvent} ev 
      */
+
+    moveSelection(by) {
+        if (typeof this.context === "undefined") {
+            return
+        }
+
+        var newIdx = this.state.currentlySelecting
+
+        if (newIdx === -1) {
+            newIdx = 0
+        } else {
+            newIdx = (newIdx + by) % this.context.names.length
+        }
+
+        this.updateState("currentlySelecting", newIdx)
+        this.updateState("text", this.context.names[newIdx])
+    }
+
+    upSelection() {
+        this.moveSelection(-1)
+    }
+
+    downSelection() {
+        this.moveSelection(1)
+    }
+
     onKeyPressed(ev) {
         if (ev.key.length === 1) {
             this.updateState("text", this.state.text + ev.key)
@@ -169,6 +198,12 @@ class InteractveSelection extends Component {
         }
         else if (ev.key === "Enter") {
             this.onSubmit()
+        }
+        else if (ev.key == "ArrowUp" || ev.key == "ArrowLeft") {
+            this.upSelection()
+        }
+        else if (ev.key == "ArrowDown" || ev.key == "ArrowRight") {
+            this.downSelection()
         }
     }
 
