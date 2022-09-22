@@ -12,7 +12,7 @@ const apiListStories = apiEndpoint + "list-stories"
 var storyListContext = createContext({
     vals: {},
     names: [],
-    updateNames: (val) => {}
+    updateNames: (val) => { }
 })
 
 export class SlContextProvider extends Component {
@@ -252,7 +252,7 @@ class Home extends Component {
     }
 
     render() {
-        return <div className='background fullscreen'>
+        return <>
             <Head>
                 <title>CDE game hub</title>
             </Head>
@@ -263,7 +263,7 @@ class Home extends Component {
                     <ConsoleLine isInput={true}><InteractveSelection bindListener={this.bindListener.bind(this)} /><Cursor /></ConsoleLine>
                 </Container>
             </SlContextProvider>
-        </div>
+        </>
     }
 }
 

@@ -1,5 +1,5 @@
-export function ConsoleLine({ text, isInput = false, children = undefined, color="inherit", style, newLine = true }) {
-    var text_style = {color: color, ...style}
+export function ConsoleLine({ text, isInput = false, children = undefined, color = "inherit", style, newLine = true }) {
+    var text_style = { color: color, ...style }
     var br = (newLine) ? <br /> : undefined
 
     if (isInput) {
@@ -25,7 +25,7 @@ export function Cursor() {
 }
 
 export function Container({ children }) {
-    return <div className="game-container">
-        {children}
+    return <div className="background fullscreen">
+        <div className="game-container">{children}</div>
     </div>
 }
