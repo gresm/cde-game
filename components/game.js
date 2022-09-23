@@ -7,7 +7,7 @@ export class Game extends Component {
         super(props)
         this.story = props.story
         this.name = props.name
-        this.isValid = typeof this.story !== "undefined"
+        this.isValid = this.story !== null
     }
 
     render() {
