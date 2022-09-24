@@ -13,7 +13,7 @@ export class Game extends Component {
     render() {
         return <Container>
             <ConsoleLine isInput={true}>./run {this.name}</ConsoleLine>
-            <ConsoleLine>{this.isValid ? "Loading..." : `Story: ${this.name} not found.`}</ConsoleLine>
+            <ConsoleLine id='loading-screen' >{this.isValid ? "Loading..." : `Story: ${this.name} not found.`}</ConsoleLine>
             <Cursor />
         </Container>
     }

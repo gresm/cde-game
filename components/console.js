@@ -1,9 +1,10 @@
-export function ConsoleLine({ text, isInput = false, children = undefined, color = "inherit", style, newLine = true }) {
+export function ConsoleLine({ text, isInput = false, children = undefined, color = "inherit", style, newLine = true, ...extra }) {
     var text_style = { color: color, ...style }
     var br = (newLine) ? <br /> : undefined
+    console.log(extra)
 
     if (isInput) {
-        return <><div className="inline-div">
+        return <><div className="inline-div" {...extra}>
             <div className='special-green-color'>cde@cde-game-web</div>
             <div className='normal-text'>:</div>
             <div className='special-blue-color'>~</div>
@@ -13,7 +14,7 @@ export function ConsoleLine({ text, isInput = false, children = undefined, color
         </div>{br}</>
     }
     else {
-        return <><div className="inline-div">
+        return <><div className="inline-div" {...extra}>
             <div className='normal-text' style={text_style}>{text}</div>
             <div className='normal-text' style={text_style}>{children}</div>
         </div>{br}</>
