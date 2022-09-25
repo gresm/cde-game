@@ -11,6 +11,10 @@ a {
   /*text-decoration: none;*/
 }
 
+div {
+  display: inherit;
+}
+
 .fullscreen {
   position: absolute;
   top: 0px;
