@@ -1,7 +1,6 @@
 export function ConsoleLine({ text, isInput = false, children = undefined, color = "inherit", style, newLine = true, ...extra }) {
     var text_style = { color: color, ...style }
     var br = (newLine) ? <br /> : undefined
-    console.log(extra)
 
     if (isInput) {
         return <><div className="inline-div" {...extra}>
