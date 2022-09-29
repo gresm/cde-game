@@ -11,6 +11,7 @@ export class Game extends Component {
         this.mainLoaded = false
         this.libLoaded = false
         this.sk = null
+        this.code = props.code
     }
 
     skulptMainLoaded() {
@@ -31,13 +32,17 @@ export class Game extends Component {
     }
 
     skulptLoaded() {
-        
+        function builtinRead(x) {
+            if (this.sk.builtinFiles === undefined || this.sk.builtinFiles["files"][x] === undefined)
+                    throw "File not found: '" + x + "'";
+            return this.sk.builtinFiles["files"][x];
+        }
     }
 
     render() {
         return <>
-            <Script src='../skulpt.js' onLoad={this.skulptMainLoaded}></Script>
-            <Script src='../skulpt-stdlib.js' onLoad={this.skulptStdlibLoaded}></Script>
+            <Script src='../skulpt.js' onLoad={this.skulptMainLoaded} strategy="afterInteractive"></Script>
+            <Script src='../skulpt-stdlib.js' onLoad={this.skulptStdlibLoaded} strategy="lazyOnload"></Script>
             <Container>
                 <ConsoleLine isInput={true}>./run {this.name}</ConsoleLine>
                 <ConsoleLine id='loading-screen' >{this.isValid ? "Loading..." : `Story: ${this.name} not found.`}</ConsoleLine>
