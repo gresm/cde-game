@@ -1,5 +1,5 @@
 // Based and hevily modified on: https://stackoverflow.com/a/15292582/15140144
-// This is shared under CC BY-SA 3.0 license
+// This is shared under CC BY-SA 3.0 license (Is MIT license valid?)
 export function loadScriptsInQueue(scripts, callback) {
     callback = callback || function () { }
     var x = 0;
