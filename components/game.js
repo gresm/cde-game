@@ -21,8 +21,6 @@ export class Game extends Component {
         if (this.mainLoaded && this.libLoaded) {
             this.skulptLoaded();
         }
-
-        console.log(Sk)
     }
 
     skulptStdlibLoaded = () => {
