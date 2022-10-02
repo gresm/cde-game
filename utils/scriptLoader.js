@@ -15,7 +15,7 @@ export function loadScriptsInQueue(scripts, callback) {
             }
         });
     }
-    loopArray(_scripts, scripts);
+    loopArray(scripts);
 }
 
 export function loadScripts(scripts, callback) {
@@ -27,7 +27,7 @@ export function loadScripts(scripts, callback) {
 }
 
 export function loadScript(src, callback) {
-    script = document.createElement('script');
+    var script = document.createElement('script');
 
     script.onerror = function () {
         alert('Error to handle')

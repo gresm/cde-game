@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import { ConsoleLine, Cursor, Container } from "./console"
 import Script from "next/script"
+import { loadScriptsInQueue } from "../utils/scriptLoader"
 
 export class Game extends Component {
     constructor(props) {
@@ -14,16 +15,18 @@ export class Game extends Component {
         this.code = props.code
     }
 
-    skulptMainLoaded() {
+    skulptMainLoaded = () => {
         this.sk = Sk
         this.mainLoaded = true;
         
         if (this.mainLoaded && this.libLoaded) {
             this.skulptLoaded();
         }
+
+        console.log(Sk)
     }
 
-    skulptStdlibLoaded() {
+    skulptStdlibLoaded = () => {
         this.libLoaded = true;
         
         if (this.mainLoaded && this.libLoaded) {
@@ -39,10 +42,14 @@ export class Game extends Component {
         }
     }
 
+    componentDidMount() {
+        loadScriptsInQueue(["../skulpt.min.js", "../skulpt-stdlib.js"], [this.skulptMainLoaded, this.skulptStdlibLoaded])
+    }
+
     render() {
         return <>
-            <Script src='../skulpt.js' onLoad={this.skulptMainLoaded} strategy="afterInteractive"></Script>
-            <Script src='../skulpt-stdlib.js' onLoad={this.skulptStdlibLoaded} strategy="lazyOnload"></Script>
+            {/*<Script src='../skulpt.js' onLoad={this.skulptMainLoaded} strategy="afterInteractive"></Script>
+            <Script src='../skulpt-stdlib.js' onLoad={this.skulptStdlibLoaded} strategy="lazyOnload"></Script>*/}
             <Container>
                 <ConsoleLine isInput={true}>./run {this.name}</ConsoleLine>
                 <ConsoleLine id='loading-screen' >{this.isValid ? "Loading..." : `Story: ${this.name} not found.`}</ConsoleLine>
