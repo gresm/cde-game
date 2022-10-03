@@ -37,6 +37,11 @@ export class Game extends Component {
                     throw "File not found: '" + x + "'";
             return this.sk.builtinFiles["files"][x];
         }
+
+        this.sk.configure({
+            __future__: this.sk.python3,
+            read: builtinRead
+        })
     }
 
     componentDidMount() {

@@ -10,6 +10,7 @@
     "pre-build": "python3 stories/generate.py"
   },
   "dependencies": {
+    "bower": "^1.8.14",
     "next": "12.2.0",
     "react": "18.2.0",
     "react-dom": "18.2.0"
