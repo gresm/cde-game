@@ -1,6 +1,6 @@
-import { Component } from 'react';
-import { ConsoleLine, Cursor, Container } from "./console"
-import { loadScriptsInQueue } from "../utils/scriptLoader"
+import { Component } from "react";
+import { ConsoleLine, Cursor, Container } from "./console";
+import { loadScriptsInQueue } from "../utils/scriptLoader";
 
 export class Game extends Component {
     constructor(props) {
@@ -10,14 +10,12 @@ export class Game extends Component {
         this.isValid = this.story !== null
         this.mainLoaded = false
         this.libLoaded = false
-        this.sk = null
         this.code = props.code
     }
 
     skulptMainLoaded = () => {
-        this.sk = Sk
         this.mainLoaded = true;
-        
+
         if (this.mainLoaded && this.libLoaded) {
             this.skulptLoaded();
         }
@@ -25,7 +23,7 @@ export class Game extends Component {
 
     skulptStdlibLoaded = () => {
         this.libLoaded = true;
-        
+
         if (this.mainLoaded && this.libLoaded) {
             this.skulptLoaded();
         }
@@ -33,15 +31,18 @@ export class Game extends Component {
 
     skulptLoaded() {
         function builtinRead(x) {
-            if (this.sk.builtinFiles === undefined || this.sk.builtinFiles["files"][x] === undefined)
-                    throw "File not found: '" + x + "'";
-            return this.sk.builtinFiles["files"][x];
+            if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined) {
+                throw "File not found: '" + x + "'";
+            }
+            return Sk.builtinFiles["files"][x];
         }
 
-        this.sk.configure({
-            __future__: this.sk.python3,
+        Sk.configure({
+            __future__: Sk.python3,
             read: builtinRead
         })
+
+        Sk.importMainWithBody("__main__", false, "print('hello world')", true)
     }
 
     componentDidMount() {
