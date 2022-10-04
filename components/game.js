@@ -3,6 +3,9 @@ import { ConsoleLine, Cursor, Container } from "./console";
 import { loadScriptsInQueue } from "../utils/scriptLoader";
 
 export class Game extends Component {
+    skulpt = "../skulpt.min.js"
+    skulptSdt = "../skulpt-stdlib.js"
+
     constructor(props) {
         super(props)
         this.story = props.story
@@ -11,6 +14,7 @@ export class Game extends Component {
         this.mainLoaded = false
         this.libLoaded = false
         this.code = props.code
+        this.wasMounted = false
     }
 
     skulptMainLoaded = () => {
@@ -45,8 +49,16 @@ export class Game extends Component {
         Sk.importMainWithBody("__main__", false, "print('hello world')", true)
     }
 
+    loadSkulpt() {
+        loadScriptsInQueue([this.skulpt, this.skulptSdt], [this.skulptMainLoaded, this.skulptStdlibLoaded])
+    }
+
     componentDidMount() {
-        loadScriptsInQueue(["../skulpt.min.js", "../skulpt-stdlib.js"], [this.skulptMainLoaded, this.skulptStdlibLoaded])
+        if (!this.wasMounted) {
+            this.loadSkulpt();
+        }
+
+        this.wasMounted = true;
     }
 
     render() {
