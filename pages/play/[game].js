@@ -1,4 +1,4 @@
-import { readFile } from "fs/promises"
+import { readFile, readdir } from "fs/promises"
 import { getLoader } from "../../stories/server"
 import { Game } from "../../components/game"
 
@@ -20,6 +20,10 @@ var code = null
  * @returns 
  */
 export async function getServerSideProps(ctx) {
+    readdir(".").then((value) => {
+        console.log(value)
+    })
+    
     if (code === null) {
         code = await (await readFile("./game/main.py")).toString()
     }
