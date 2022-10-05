@@ -21,7 +21,7 @@ var code = null
  */
 export async function getServerSideProps(ctx) {
     if (code === null) {
-        code = await (await readFile("game/main.py")).toString()
+        code = await (await readFile("./game/main.py")).toString()
     }
     return {
         props: { story: getLoader().getStory(ctx.query.game), name: ctx.query.game, code: code}
