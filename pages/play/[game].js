@@ -1,4 +1,4 @@
-import { readFile, readdir } from "fs/promises"
+import { readdir } from "fs/promises"
 import { getLoader } from "../../stories/server"
 import { Game } from "../../components/game"
 
