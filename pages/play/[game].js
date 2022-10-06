@@ -1,6 +1,6 @@
-import { readdir } from "fs/promises"
 import { getLoader } from "../../stories/server"
 import { Game } from "../../components/game"
+import { Component } from "react"
 
 /**
  * @typedef { import("next").NextApiRequest } NextApiRequest
@@ -8,12 +8,18 @@ import { Game } from "../../components/game"
  * @typedef { import("next").GetServerSidePropsContext } GetServerSidePropsContext
  */
 
-export default function PlayGame({ story, name, code, curdir }) {
-    console.log(curdir)
-    return <Game story={story} name={name} code={code} />
-}
+export default class PlayGame extends Component {
+    constructor(props) {
+        super(props)
+        var { story, name } = props
+        this.story = story
+        this.name = name
+    }
 
-var code = null
+    render() {
+        return <Game story={this.story} name={this.name} />
+    }
+}
 
 /**
  * 
@@ -21,18 +27,9 @@ var code = null
  * @returns 
  */
 export async function getServerSideProps(ctx) {
-    readdir(".").then((value) => {
-        console.log(value)
-    })
-
-    if (code === null) {
-        code = "print('debug')" // await (await readFile("./game/main.py")).toString()
-    }
-    var curdir = await readdir(".")
     return {
         props: {
-            story: getLoader().getStory(ctx.query.game), name: ctx.query.game, code: code,
-            curdir: curdir
+            story: getLoader().getStory(ctx.query.game), name: ctx.query.game
         }
     }
 }

@@ -7,7 +7,7 @@
     "build": "npm run pre-build && next build",
     "start": "next start",
     "lint": "npm run pre-build && next lint",
-    "pre-build": "python3 stories/generate.py"
+    "pre-build": "python3 setup.py"
   },
   "dependencies": {
     "bower": "^1.8.14",

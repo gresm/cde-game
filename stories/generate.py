@@ -1,7 +1,11 @@
 from pathlib import Path
 import json
+from re import I
 
-from hstt_to_json import parse
+try:
+    from .hstt_to_json import parse
+except ImportError:
+    from hstt_to_json import parse
 
 output_file_template = """// This file was automatically generated. Don't change it.
 export var data = JSON.parse(String.raw`{}`)

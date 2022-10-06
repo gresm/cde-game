@@ -13,7 +13,7 @@ export class Game extends Component {
         this.isValid = this.story !== null
         this.mainLoaded = false
         this.libLoaded = false
-        this.code = props.code
+        this.code = ""
         this.wasMounted = false
     }
 
@@ -28,8 +28,9 @@ export class Game extends Component {
     skulptStdlibLoaded = () => {
         this.libLoaded = true;
 
-        if (this.mainLoaded && this.libLoaded) {
+        if (this.mainLoaded && this.libLoaded && this.code !== "") {
             this.skulptLoaded();
+            this.onAfterFullLoad();
         }
     }
 
@@ -45,8 +46,11 @@ export class Game extends Component {
             __future__: Sk.python3,
             read: builtinRead
         })
+    }
 
-        Sk.importMainWithBody("__main__", false, "print('hello world')", true)
+    onAfterFullLoad() {
+        
+        var code = Sk.importMainWithBody("__main__", false, this.code, true);
     }
 
     loadSkulpt() {
@@ -56,6 +60,17 @@ export class Game extends Component {
     componentDidMount() {
         if (!this.wasMounted) {
             this.loadSkulpt();
+
+            if (this.code === "") {
+                fetch("../game/main.py").then((value) => {
+                    value.text().then((value) => {
+                        this.code = value
+                        if (this.mainLoaded && this.libLoaded) {
+                            this.onAfterFullLoad();
+                        }
+                    })
+                })
+            }
         }
 
         this.wasMounted = true;
