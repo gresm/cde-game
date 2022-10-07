@@ -46,10 +46,11 @@ export class Game extends Component {
             __future__: Sk.python3,
             read: builtinRead
         })
+
+        Sk.divid = "game"
     }
 
     onAfterFullLoad() {
-        
         var code = Sk.importMainWithBody("__main__", false, this.code, true);
     }
 
@@ -77,12 +78,10 @@ export class Game extends Component {
     }
 
     render() {
-        return <>
-            <Container>
-                <ConsoleLine isInput={true}>./run {this.name}</ConsoleLine>
-                <ConsoleLine id='loading-screen' >{this.isValid ? "Loading..." : `Story: ${this.name} not found.`}</ConsoleLine>
-                <Cursor />
-            </Container>
-        </>
+        return <Container id="game">
+            <ConsoleLine isInput={true}>./run {this.name}</ConsoleLine>
+            <ConsoleLine id='loading-screen' >{this.isValid ? "Loading..." : `Story: ${this.name} not found.`}</ConsoleLine>
+            <Cursor />
+        </Container>
     }
 }

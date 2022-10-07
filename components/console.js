@@ -24,8 +24,8 @@ export function Cursor() {
     return <div className='cursor'></div>
 }
 
-export function Container({ children }) {
+export function Container({ children, ...props }) {
     return <div className="background fullscreen">
-        <div className="game-container">{children}</div>
+        <div className="game-container" {...props}>{children}</div>
     </div>
 }
