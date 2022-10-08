@@ -36,10 +36,9 @@ export class Game extends Component {
 
     skulptLoaded() {
         function builtinRead(x) {
-            if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined) {
-                throw "File not found: '" + x + "'";
+            if (Sk.builtinFiles !== undefined && Sk.builtinFiles["files"][x] !== undefined) {
+                return Sk.builtinFiles["files"][x];   
             }
-            return Sk.builtinFiles["files"][x];
         }
 
         Sk.configure({
