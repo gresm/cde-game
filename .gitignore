@@ -34,6 +34,9 @@ yarn-error.log*
 # Jetbrains
 .idea/
 
+# VSCode
+.vscode/
+
 # Python stuff
 # Byte-compiled / optimized / DLL files
 __pycache__/

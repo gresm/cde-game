@@ -30,14 +30,21 @@ async function uglifyCode(code) {
     var ret = {}
     for (idx in dirs) {
         var file = dirs[idx]
-        if (!file.endsWith(".js")) {
+        if (!(file.endsWith(".js") || file.endsWith(".py"))) {
             continue
         }
         
         var code = (await readFile(path.join(dir, file))).toString()
         if (code === "") {
+            ret["./" + file] = code
             continue
         }
+
+        if (file.endsWith(".py")) {
+            ret["./" + file] = code
+            continue
+        }
+
         ret["./" + file] = await uglifyCode(code)
     }
 
@@ -46,5 +53,5 @@ async function uglifyCode(code) {
 
 
 bundleDirectory("./skulpt-modules").then((v) => {
-    console.log(v)
+    console.log(JSON.stringify(v))
 })

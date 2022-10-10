@@ -1,6 +1,7 @@
 import { Component } from "react";
 import { ConsoleLine, Cursor, Container } from "./console";
 import { loadScriptsInQueue } from "../utils/scriptLoader";
+import skulptModules from "../generated/skulpt-extra"
 
 export class Game extends Component {
     skulpt = "../skulpt.min.js"
@@ -38,6 +39,10 @@ export class Game extends Component {
         function builtinRead(x) {
             if (Sk.builtinFiles !== undefined && Sk.builtinFiles["files"][x] !== undefined) {
                 return Sk.builtinFiles["files"][x];   
+            }
+
+            if (skulptModules[x] !== undefined) {
+                return skulptModules[x];
             }
         }
 
