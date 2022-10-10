@@ -1,6 +1,5 @@
 from pathlib import Path
 import json
-from re import I
 
 try:
     from .hstt_to_json import parse
@@ -8,13 +7,14 @@ except ImportError:
     from hstt_to_json import parse
 
 output_file_template = """// This file was automatically generated. Don't change it.
-export var data = JSON.parse(String.raw`{}`)
+export default JSON.parse(String.raw`{}`)
 """
 
 current_file = Path(__file__)
 cwd = current_file.parent
+proj = cwd.parent
 
-out_file = cwd / "stories_json.js"
+out_file = proj / "generated" / "stories-json.js"
 input_dir = cwd / "stories"
 
 
@@ -44,6 +44,7 @@ def main():
     
     out = {"index": visible, "stories": stories}
     out_text = json.dumps(out)
+    out_file.touch()
     out_file.write_text(output_file_template.format(out_text))
 
 

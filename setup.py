@@ -25,12 +25,10 @@ if error_code != 0:
 code = process.stdout.read().decode("utf-8")[:-1]
 print("Exporting compressed libraries.")
 out_file = Path("generated/skulpt-extra.js")
-
-if not out_file.exists():
-    out_file.touch()
+out_file.touch()
 
 code_template = f"""// This file was automatically generated. Don't change it.
-export default data = JSON.parse(String.raw`{code}`)
+export default JSON.parse(String.raw`{code}`)
 """
 
 with out_file.open("w") as _writer:

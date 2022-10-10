@@ -1,4 +1,4 @@
-import { data } from "./stories_json"
+import data from "../generated/stories-json"
 
 export class StoriesMenager {
     data
