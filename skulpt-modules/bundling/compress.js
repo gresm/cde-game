@@ -30,6 +30,10 @@ async function uglifyCode(code) {
     var ret = {}
     for (idx in dirs) {
         var file = dirs[idx]
+        if (!file.endsWith(".js")) {
+            continue
+        }
+        
         var code = (await readFile(path.join(dir, file))).toString()
         if (code === "") {
             continue

@@ -15,12 +15,13 @@ generate_stories()
 
 # Compress skulpt additional modules.
 print("Compressing additional skulpt libraries.")
-process = Popen(["node", "skulpt-modules-bundling/compress.js"], stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+process = Popen(["node", "skulpt-modules/bundling/compress.js"], stdin=PIPE, stdout=PIPE, stderr=STDOUT)
 error_code = process.wait()
 
 if error_code != 0:
+    print(process.stdout.read().decode("utf-8"))
     print(f"Subprocess ended with non-zero {error_code} error code. Aborting.")
-    raise SystemError
+    raise SystemExit
 
 code = process.stdout.read().decode("utf-8")[:-1]
 print("Exporting compressed libraries.")
