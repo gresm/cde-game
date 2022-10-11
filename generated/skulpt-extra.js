@@ -1,2 +1,2 @@
 // This file was automatically generated. Don't change it.
-export default JSON.parse(String.raw`{"./hello.py":"def hello(person):\n    return f\"Hello {person}!\"","./test.js":"console.log(\"This is a test\");"}`)
+export default JSON.parse(String.raw`{"./game_interface.js":"var $builtinmodule=function(name){var mod={};return mod.__name__=new Sk.builtin.str(\"game_interface\"),mod.get_story=new Sk.builtin.func(function(){return Sk.builtin.pyCheckArgsLen(\"get_story\",arguments.length,0,0),Sk.ffi.remapToPy(Sk.gameInterface.story)}),mod};","./hello.py":"def hello(person):\n    return f\"Hello {person}!\"","./test.js":"console.log(\"This is a test\");"}`)

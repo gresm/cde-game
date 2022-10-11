@@ -1,5 +1,8 @@
 from document import currentDiv, getElementById
-from hello import hello
+
+import game_interface as game
 
 gameDiv = getElementById(currentDiv())
-gameDiv.innerHTML = hello('user')
+
+if gameDiv:
+    gameDiv.innerHTML = str(game.get_story())

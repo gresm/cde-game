@@ -52,6 +52,9 @@ export class Game extends Component {
         })
 
         Sk.divid = "game"
+
+        Sk.gameInterface = {}
+        Sk.gameInterface.story = this.story
     }
 
     onAfterFullLoad() {
