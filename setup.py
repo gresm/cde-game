@@ -1,4 +1,4 @@
-from shutil import copytree
+from shutil import copytree, copyfile
 from pathlib import Path
 from stories.generate import main as generate_stories
 from subprocess import Popen, PIPE, STDOUT
@@ -8,6 +8,12 @@ print("Copying game/ -> public/")
 game_dir = Path("game")
 dest = Path("public/game")
 copytree(game_dir, dest, dirs_exist_ok=True)
+
+# Copy hstt_runner.py -> skulpt-modules/hstt_runner.py
+print("Copying hstt_runner.py -> skulpt-modules/hstt_runner.py")
+hstt_runner = Path("hstt_runner.py")
+dest = Path("skulpt-modules/hstt_runner.py")
+copyfile(hstt_runner, dest)
 
 # Generate story trees.
 print("Generating story trees.")

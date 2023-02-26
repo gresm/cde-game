@@ -1,16 +1,19 @@
 from document import currentDiv, getElementById
 
 import game_interface as game
+import hstt_runner
 
 gameDiv = getElementById(currentDiv())
-incr = 0
 
 
-def step(val):
-    print(val)
-    # global incr
-    # if incr >= 10:
-    #     return False
-    # print(incr)
-    # incr += 1
-    # return True
+class GameRunner:
+    def __init__(self, story) -> None:
+        self.story = story
+
+
+game_runner = GameRunner(game.get_story())
+gameDiv.innerText = hstt_runner
+
+
+def step(selected):
+    pass
