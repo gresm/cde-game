@@ -58,7 +58,7 @@ export class Game extends Component {
     }
 
     progressGame(feedback) {
-        setupInput(Sk.ffi.remapToJs(Sk.gameInterface.stepFunc.tp$call([feedback])));
+        this.setupInput(Sk.ffi.remapToJs(Sk.gameInterface.stepFunc.tp$call([feedback])));
     }
 
     setupInput(number) {
