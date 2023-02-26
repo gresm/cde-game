@@ -4,5 +4,13 @@ import game_interface as game
 
 gameDiv = getElementById(currentDiv())
 
-if gameDiv:
-    gameDiv.innerHTML = str(game.get_story())
+
+class GameRunner:
+    def __init__(self, story) -> None:
+        self.story = story
+
+
+game_runner = GameRunner(game.get_story())
+
+def step(selected):
+    pass

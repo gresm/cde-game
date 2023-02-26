@@ -57,8 +57,18 @@ export class Game extends Component {
         Sk.gameInterface.story = this.story
     }
 
+    progressGame(feedback) {
+        setupInput(Sk.ffi.remapToJs(Sk.gameInterface.stepFunc.tp$call([feedback])));
+    }
+
+    setupInput(number) {
+        // TODO: fill it.
+    }
+
     onAfterFullLoad() {
         var code = Sk.importMainWithBody("__main__", false, this.code, true);
+        Sk.gameInterface.stepFunc = code.tp$getattr(Sk.builtin.str("step"));
+        this.progressGame(0)
     }
 
     loadSkulpt() {
