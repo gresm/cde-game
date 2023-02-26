@@ -1,7 +1,6 @@
 """
 Utility script to run HSTT formatted json files.
 """
-from __future__ import annotations
 
 
 class HSTTParserException(Exception):
@@ -103,7 +102,7 @@ class StoryNode:
         return cls(
             data["name"],
             NodeText.parse(data["text"]),
-            NodeOptions.parse(options if (options := data.get("options")) else {}),
+            NodeOptions.parse(data.get("options", {})),
             data.get("goto")
         )
 
