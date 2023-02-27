@@ -1,9 +1,16 @@
-import os
+import os, time
 from shutil import copytree, copyfile
 from pathlib import Path
 from stories.generate import main as generate_stories
 from subprocess import Popen, PIPE, STDOUT
 from argparse import ArgumentParser
+
+
+try:
+    import psutil
+except ImportError:
+    os.system("python -m pip install psutil")
+    import psutil
 
 
 def main():
@@ -47,7 +54,18 @@ export default JSON.parse(String.raw`{code}`)
 
 
 def listen(pid: int):
-    pass
+    mainpy = Path("game/main.py")
+    mainpy_static = Path("public/game/main.py")
+
+    while psutil.pid_exists(pid):
+        time.sleep(5)
+
+        # print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(mainpy.stat().st_mtime)))
+        # print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(mainpy_static.stat().st_mtime)))
+
+        if mainpy.stat().st_mtime > mainpy_static.stat().st_mtime:
+            print("File game/main.py changed. Updating public/game/main.py")
+            copyfile(mainpy, mainpy_static)
 
 
 parser = ArgumentParser()
