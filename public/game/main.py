@@ -12,7 +12,7 @@ class GameRunner:
 
 
 game_runner = GameRunner(game.get_story())
-gameDiv.innerText = hstt_runner
+gameDiv.innerText = "Hello from python!"
 
 
 def step(selected):

@@ -1,4 +1,4 @@
-import os, time
+import os, time, sys
 from shutil import copytree, copyfile
 from pathlib import Path
 from stories.generate import main as generate_stories
@@ -50,18 +50,24 @@ def main():
 
 
 def listen(pid: int):
+    print("Spawning a listener for changes in game/main.py...")
     mainpy = Path("game/main.py")
     mainpy_static = Path("public/game/main.py")
 
-    while psutil.pid_exists(pid):
-        time.sleep(5)
+    try:
+        while psutil.pid_exists(pid):
+            time.sleep(5)
 
-        # print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(mainpy.stat().st_mtime)))
-        # print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(mainpy_static.stat().st_mtime)))
+            # print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(mainpy.stat().st_mtime)))
+            # print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(mainpy_static.stat().st_mtime)))
 
-        if mainpy.stat().st_mtime > mainpy_static.stat().st_mtime:
-            print("File game/main.py changed. Updating public/game/main.py")
-            copyfile(mainpy, mainpy_static)
+            if mainpy.stat().st_mtime > mainpy_static.stat().st_mtime:
+                print("File game/main.py changed. Updating public/game/main.py")
+                copyfile(mainpy, mainpy_static)
+        print("Parent process ended, exiting from listener...")
+    except KeyboardInterrupt:
+        print("Exiting from listener...")
+        sys.exit(0)
 
 
 parser = ArgumentParser()
