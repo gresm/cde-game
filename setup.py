@@ -6,13 +6,6 @@ from subprocess import Popen, PIPE, STDOUT
 from argparse import ArgumentParser
 
 
-try:
-    import psutil
-except ImportError:
-    os.system("python -m pip install psutil")
-    import psutil
-
-
 def main():
     # Copy game/ folder to public/
     print("Copying game/ -> public/")
@@ -50,6 +43,13 @@ def main():
 
 
 def listen(pid: int):
+    try:
+        import psutil
+    except ImportError:
+        os.system("python -m pip install psutil")
+        import importlib as _iplib
+        psutil = _iplib.import_module("psutil")
+    
     print("Spawning a listener for changes in game/main.py...")
     mainpy = Path("game/main.py")
     mainpy_static = Path("public/game/main.py")
