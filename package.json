@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "npm run pre-build && next dev",
+    "dev": "npm run pre-build && next dev & python3 setup.py -l $!",
     "build": "npm run pre-build && next build",
     "start": "next start",
     "lint": "npm run pre-build && next lint",
