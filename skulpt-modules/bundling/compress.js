@@ -53,5 +53,6 @@ async function uglifyCode(code) {
 
 
 bundleDirectory("./skulpt-modules").then((v) => {
-    console.log(JSON.stringify(v))
+    console.log(`// This file was automatically generated. Don't change it.
+export default JSON.parse(String.raw\`${JSON.stringify(v)}\`)`)
 })

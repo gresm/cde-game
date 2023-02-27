@@ -45,12 +45,8 @@ def main():
     out_file = Path("generated/skulpt-extra.js")
     out_file.touch()
 
-    code_template = f"""// This file was automatically generated. Don't change it.
-export default JSON.parse(String.raw`{code}`)
-"""
-
     with out_file.open("w") as _writer:
-        _writer.write(code_template)
+        _writer.write(code)
 
 
 def listen(pid: int):
