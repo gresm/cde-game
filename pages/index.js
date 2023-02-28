@@ -2,7 +2,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link';
 import { React, Component, createContext } from 'react';
-import { ConsoleLine, Cursor, Container } from '../components/console'
+import { ConsoleLine, Cursor, Container, InteractveSelection } from '../components/console'
 
 
 const gameEndpoint = "/play/"
@@ -133,60 +133,13 @@ class StoriesList extends Component {
     }
 }
 
-class InteractveSelection extends Component {
+class MainMenuInteractiveSelection extends InteractveSelection {
     static contextType = storyListContext
 
     constructor(props) {
         super(props)
 
         props.bindListener(this, this.onKeyPressed)
-        this.state = {
-            text: "",
-            currentlySelecting: -1
-        }
-
-        this.mounted = false
-    }
-
-    updateState(name, value) {
-        var state = this.state
-        state[name] = value
-        if (this.mounted) {
-            this.setState(state)
-        }
-    }
-
-    componentDidMount() {
-        this.mounted = true
-    }
-
-    /**
-     * @param {KeyboardEvent} ev 
-     */
-
-    moveSelection(by) {
-        if (typeof this.context === "undefined") {
-            return
-        }
-
-        var newIdx = this.state.currentlySelecting
-
-        if (newIdx === -1) {
-            newIdx = 0
-        } else {
-            newIdx = (newIdx + by) % this.context.names.length
-        }
-
-        this.updateState("currentlySelecting", newIdx)
-        this.updateState("text", this.context.names[newIdx])
-    }
-
-    upSelection() {
-        this.moveSelection(-1)
-    }
-
-    downSelection() {
-        this.moveSelection(1)
     }
 
     onKeyPressed(ev) {
@@ -211,10 +164,6 @@ class InteractveSelection extends Component {
         if (this.mounted) {
             window.location.pathname = gameEndpoint + this.state.text
         }
-    }
-
-    render() {
-        return <ConsoleLine newLine={false}>{this.state.text}</ConsoleLine>
     }
 }
 
@@ -260,7 +209,7 @@ class Home extends Component {
                 <Container>
                     <ConsoleLine text="ls --games" isInput={true} />
                     <StoriesList />
-                    <ConsoleLine isInput={true}><InteractveSelection bindListener={this.bindListener.bind(this)} /><Cursor /></ConsoleLine>
+                    <ConsoleLine isInput={true}><MainMenuInteractiveSelection bindListener={this.bindListener.bind(this)} /><Cursor /></ConsoleLine>
                 </Container>
             </SlContextProvider>
         </>
