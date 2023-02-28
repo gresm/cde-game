@@ -1,21 +1,21 @@
 import { Component } from "react";
 import { ConsoleLine, Cursor, Container } from "./console";
 import { loadScriptsInQueue } from "../utils/scriptLoader";
-import skulptModules from "../generated/skulpt-extra"
+import skulptModules from "../generated/skulpt-extra";
 
 export class Game extends Component {
-    skulpt = "../skulpt.min.js"
-    skulptSdt = "../skulpt-stdlib.js"
+    skulpt = "../skulpt.min.js";
+    skulptSdt = "../skulpt-stdlib.js";
 
     constructor(props) {
-        super(props)
-        this.story = props.story
-        this.name = props.name
-        this.isValid = this.story !== null
-        this.mainLoaded = false
-        this.libLoaded = false
-        this.code = ""
-        this.wasMounted = false
+        super(props);
+        this.story = props.story;
+        this.name = props.name;
+        this.isValid = this.story !== null;
+        this.mainLoaded = false;
+        this.libLoaded = false;
+        this.code = "";
+        this.wasMounted = false;
     }
 
     skulptMainLoaded = () => {
@@ -49,12 +49,12 @@ export class Game extends Component {
         Sk.configure({
             __future__: Sk.python3,
             read: builtinRead
-        })
+        });
 
-        Sk.divid = "game"
+        Sk.divid = "game-text";
 
-        Sk.gameInterface = {}
-        Sk.gameInterface.story = this.story
+        Sk.gameInterface = {};
+        Sk.gameInterface.story = this.story;
     }
 
     progressGame(feedback) {
@@ -68,7 +68,7 @@ export class Game extends Component {
     onAfterFullLoad() {
         var code = Sk.importMainWithBody("__main__", false, this.code, true);
         Sk.gameInterface.stepFunc = code.tp$getattr(Sk.builtin.str("step"));
-        this.progressGame(0)
+        this.progressGame(0);
     }
 
     loadSkulpt() {
@@ -82,7 +82,7 @@ export class Game extends Component {
             if (this.code === "") {
                 fetch("../game/main.py").then((value) => {
                     value.text().then((value) => {
-                        this.code = value
+                        this.code = value;
                         if (this.mainLoaded && this.libLoaded) {
                             this.onAfterFullLoad();
                         }
@@ -95,9 +95,9 @@ export class Game extends Component {
     }
 
     render() {
-        return <Container id="game">
+        return <Container id="game-wrappper">
             <ConsoleLine isInput={true}>./run {this.name}</ConsoleLine>
-            <ConsoleLine id='loading-screen' >{this.isValid ? "Loading..." : `Story: ${this.name} not found.`}</ConsoleLine>
+            <ConsoleLine id='game-text' >{this.isValid ? "Loading..." : `Story: ${this.name} not found.`}</ConsoleLine>
             <Cursor />
         </Container>
     }
