@@ -24,8 +24,10 @@ div {
 }
 
 .inline-div {
-  display: inline-block;
+  display: flex;
   white-space: pre-wrap;
+  justify-content: flex-start;
+  flex-direction: row;
 }
 
 .game-container {

@@ -1,9 +1,8 @@
 import { Component } from "react";
 
 
-export function ConsoleLine({ text, isInput = false, children = undefined, color = "inherit", style, newLine = true, ...extra }) {
+export function ConsoleLine({ text, isInput = false, children = undefined, color = "inherit", style, ...extra }) {
     var text_style = { color: color, ...style }
-    var br = (newLine) ? <br /> : undefined
 
     if (isInput) {
         return <><div className="inline-div" {...extra}>
@@ -13,13 +12,13 @@ export function ConsoleLine({ text, isInput = false, children = undefined, color
             <div className='normal-text'>$ </div>
             <div className='normal-text' style={text_style}>{text}</div>
             <div className='normal-text' style={text_style}>{children}</div>
-        </div>{br}</>
+        </div></>
     }
     else {
         return <><div className="inline-div" {...extra}>
             <div className='normal-text' style={text_style}>{text}</div>
             <div className='normal-text' style={text_style}>{children}</div>
-        </div>{br}</>
+        </div></>
     }
 }
 
@@ -87,7 +86,7 @@ export class InteractveSelection extends Component {
     }
 
     render() {
-        return <ConsoleLine newLine={false}>{this.state.text}</ConsoleLine>
+        return <>{this.state.text}</>
     }
 
     onKeyPressed(ev) {

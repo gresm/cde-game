@@ -1,5 +1,5 @@
 import { Component } from "react";
-import { ConsoleLine, Cursor, Container } from "./console";
+import { ConsoleLine, Cursor, Container, InteractveSelection } from "./console";
 import { loadScriptsInQueue } from "../utils/scriptLoader";
 import skulptModules from "../generated/skulpt-extra";
 
@@ -16,6 +16,8 @@ export class Game extends Component {
         this.libLoaded = false;
         this.code = "";
         this.wasMounted = false;
+        this.divid = "game-text"
+        this.selection = null;
     }
 
     skulptMainLoaded = () => {
@@ -51,8 +53,7 @@ export class Game extends Component {
             read: builtinRead
         });
 
-        Sk.divid = "game-text";
-
+        Sk.divid = this.divid;
         Sk.gameInterface = {};
         Sk.gameInterface.story = this.story;
     }
@@ -63,6 +64,10 @@ export class Game extends Component {
 
     setupInput(number) {
         // TODO: fill it.
+
+        if (this.selection === null) {
+            return;
+        }
     }
 
     onAfterFullLoad() {
@@ -98,7 +103,7 @@ export class Game extends Component {
         return <Container id="game-wrappper">
             <ConsoleLine isInput={true}>./run {this.name}</ConsoleLine>
             <ConsoleLine id='game-text' >{this.isValid ? "Loading..." : `Story: ${this.name} not found.`}</ConsoleLine>
-            <Cursor />
+            <InteractveSelection /><Cursor />
         </Container>
     }
 }
