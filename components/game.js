@@ -1,7 +1,71 @@
-import { Component } from "react";
+"use strict";
+
+import { Component, createContext } from "react";
 import { ConsoleLine, Cursor, Container, InteractveSelection } from "./console";
 import { loadScriptsInQueue } from "../utils/scriptLoader";
 import skulptModules from "../generated/skulpt-extra";
+
+
+/**
+ * @typedef { {typing: string, setState: (key: string, value: Object) => {}, onFinishedTyping: (func: () => {}), triggerFinishedTyping: () => {}} } TypingContextData
+ * @type {import("react").Context<TypingContextData>}
+ */
+
+var typingContext = createContext({
+    typing: "",
+    setState: (key, value) => { },
+    onFinishedTyping: (func) => { },
+    triggerFinishedTyping: () => { }
+})
+
+class TypingContextProvider extends Component {
+    constructor(props) {
+        super(props);
+
+        this.defaultState = {
+            triggerFinishedTyping: this.callOnFinishedTyping.bind(this),
+            onFinishedTyping: this.bindOnFinishedTyping.bind(this),
+            resetState: this.resetState.bind(this),
+            setValue: this.setValue.bind(this),
+            typing: ""
+        }
+
+        /**
+         * @type {TypingContextData}
+        */
+        this.state = {
+            ...this.defaultState
+        }
+
+        this.triggersOnFinishedTyping = []
+    }
+
+    bindOnFinishedTyping(func) {
+        this.triggersOnFinishedTyping.push(func)
+    }
+
+    callOnFinishedTyping() {
+        this.triggersOnFinishedTyping.forEach(element => {
+            element();
+        });
+    }
+
+    setValue(key, value) {
+        this.setState({ ...this.state, [key]: value });
+    }
+
+    resetState() {
+        this.setState(this.defaultState);
+    }
+
+    render() {
+        return (
+            <typingContext.Provider value={this.state}>
+                {...this.props.children}
+            </typingContext.Provider>
+        )
+    }
+}
 
 export class Game extends Component {
     skulpt = "../skulpt.min.js";
@@ -17,7 +81,6 @@ export class Game extends Component {
         this.code = "";
         this.wasMounted = false;
         this.divid = "game-text"
-        this.selection = null;
     }
 
     skulptMainLoaded = () => {
@@ -40,7 +103,7 @@ export class Game extends Component {
     skulptLoaded() {
         function builtinRead(x) {
             if (Sk.builtinFiles !== undefined && Sk.builtinFiles["files"][x] !== undefined) {
-                return Sk.builtinFiles["files"][x];   
+                return Sk.builtinFiles["files"][x];
             }
 
             if (skulptModules[x] !== undefined) {
@@ -64,10 +127,6 @@ export class Game extends Component {
 
     setupInput(number) {
         // TODO: fill it.
-
-        if (this.selection === null) {
-            return;
-        }
     }
 
     onAfterFullLoad() {
