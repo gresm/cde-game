@@ -61,21 +61,20 @@ class TypingContextProvider extends Component {
     render() {
         return (
             <typingContext.Provider value={this.state}>
-                {...this.props.children}
+                {this.props.children}
             </typingContext.Provider>
         )
     }
 }
 
-export class Game extends Component {
+class SkulptRunner extends Component {
     skulpt = "../skulpt.min.js";
     skulptSdt = "../skulpt-stdlib.js";
 
     constructor(props) {
         super(props);
-        this.story = props.story;
-        this.name = props.name;
-        this.isValid = this.story !== null;
+
+        this.isValid = this.props.story !== null;
         this.mainLoaded = false;
         this.libLoaded = false;
         this.code = "";
@@ -118,7 +117,7 @@ export class Game extends Component {
 
         Sk.divid = this.divid;
         Sk.gameInterface = {};
-        Sk.gameInterface.story = this.story;
+        Sk.gameInterface.story = this.props.story;
     }
 
     progressGame(feedback) {
@@ -159,10 +158,21 @@ export class Game extends Component {
     }
 
     render() {
-        return <Container id="game-wrappper">
-            <ConsoleLine isInput={true}>./run {this.name}</ConsoleLine>
-            <ConsoleLine id='game-text' >{this.isValid ? "Loading..." : `Story: ${this.name} not found.`}</ConsoleLine>
+        return <>
+            <ConsoleLine id={this.divid} >{this.isValid ? "Loading..." : `Story: ${this.props.name} not found.`}</ConsoleLine>
             <InteractveSelection /><Cursor />
-        </Container>
+        </>
+    }
+}
+
+export class Game extends Component {
+    render() {
+        return (
+            <Container id="game-wrappper">
+                <ConsoleLine isInput={true}>./run {this.props.name}</ConsoleLine><TypingContextProvider>
+                    <SkulptRunner story={this.props.story} name={this.props.name} />
+                </TypingContextProvider>
+            </Container>
+        )
     }
 }
