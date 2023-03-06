@@ -16,4 +16,8 @@ gameDiv.innerText = "Hello from python!"
 
 
 def step(selected):
-    pass
+    selected = int(selected)
+    gameDiv.innerText += f"\nSomething happended {selected}"
+    if selected == -1:  # Start
+        gameDiv.innerText += "\nFirst step"
+        return 0  # Finish

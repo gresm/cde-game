@@ -5,17 +5,49 @@ import { ConsoleLine, Cursor, Container, InteractveSelection } from "./console";
 import { loadScriptsInQueue } from "../utils/scriptLoader";
 import skulptModules from "../generated/skulpt-extra";
 
+function generateNames(num) {
+    var ret = [];
+    for (const v of Array(i).keys()) {
+        ret.push(String.fromCharCode(97 + v));
+    }
+    return ret;
+}
+
 
 /**
- * @typedef { {typing: string, setState: (key: string, value: Object) => {}, onFinishedTyping: (func: () => {}), triggerFinishedTyping: () => {}} } TypingContextData
+ * 
+ * @param {String} char 
+ * @returns {Number}
+ */
+function reverseName(char) {
+    return char.charCodeAt(0) - 97;
+}
+
+/**
+ * 
+ * @param {String} text 
+ * @param {Number} range
+ * @returns {Boolean}
+ */
+function validateUserInput(text, range) {
+    if (text.length != 1) {
+        return false;
+    }
+    return 0 <= reverseName(text) < range;
+}
+
+
+/**
+ * @typedef { {getValue: (key: string) => Object, setValue: (key: string, value: Object) => void, resetState: () => void, onFinishedTyping: (func: (text: string) => void) => void, triggerFinishedTyping: (text: string) => void} } TypingContextData
  * @type {import("react").Context<TypingContextData>}
  */
 
 var typingContext = createContext({
-    typing: "",
-    setState: (key, value) => { },
+    resetState: () => { },
+    getValue: (key) => { },
+    setValue: (key, value) => { },
     onFinishedTyping: (func) => { },
-    triggerFinishedTyping: () => { }
+    triggerFinishedTyping: (text) => { }
 })
 
 class TypingContextProvider extends Component {
@@ -27,7 +59,7 @@ class TypingContextProvider extends Component {
             onFinishedTyping: this.bindOnFinishedTyping.bind(this),
             resetState: this.resetState.bind(this),
             setValue: this.setValue.bind(this),
-            typing: ""
+            getValue: this.getValue.bind(this),
         }
 
         /**
@@ -44,14 +76,18 @@ class TypingContextProvider extends Component {
         this.triggersOnFinishedTyping.push(func)
     }
 
-    callOnFinishedTyping() {
+    callOnFinishedTyping(text) {
         this.triggersOnFinishedTyping.forEach(element => {
-            element();
+            element(text);
         });
     }
 
     setValue(key, value) {
         this.setState({ ...this.state, [key]: value });
+    }
+
+    getValue(key) {
+        return this.state[key];
     }
 
     resetState() {
@@ -67,9 +103,45 @@ class TypingContextProvider extends Component {
     }
 }
 
+class GameInteractveSelection extends InteractveSelection {
+    static contextType = typingContext;
+
+    onKeyPressed(ev) {
+        if (!this.state.awaitingInput) {
+            return;
+        }
+        if (ev.key.length === 1) {
+            this.updateState("text", this.state.text + ev.key)
+        }
+        else if (ev.key === "Backspace") {
+            this.updateState("text", this.state.text.substring(0, this.state.text.length - 1))
+        }
+        else if (ev.key === "Enter") {
+            this.onSubmit()
+        }
+        else if (ev.key == "ArrowUp" || ev.key == "ArrowLeft") {
+            this.upSelection()
+        }
+        else if (ev.key == "ArrowDown" || ev.key == "ArrowRight") {
+            this.downSelection()
+        }
+    }
+
+    onSubmit() {
+        var text = this.state.text;
+        if (!validateUserInput(text, this.state.inputRange)) {
+            return;
+        }
+        this.updateState("text", "");
+        this.context.triggerFinishedTyping(text);
+    }
+}
+
 class SkulptRunner extends Component {
     skulpt = "../skulpt.min.js";
     skulptSdt = "../skulpt-stdlib.js";
+
+    static contextType = typingContext;
 
     constructor(props) {
         super(props);
@@ -79,7 +151,12 @@ class SkulptRunner extends Component {
         this.libLoaded = false;
         this.code = "";
         this.wasMounted = false;
-        this.divid = "game-text"
+        this.divid = "game-text";
+
+        /**
+         * @type {TypingContextData}
+         */
+        this.context = this.context
     }
 
     skulptMainLoaded = () => {
@@ -121,17 +198,28 @@ class SkulptRunner extends Component {
     }
 
     progressGame(feedback) {
-        this.setupInput(Sk.ffi.remapToJs(Sk.gameInterface.stepFunc.tp$call([feedback])));
+        this.setupInput(Sk.ffi.remapToJs(Sk.misceval.callsim(Sk.gameInterface.stepFunc, feedback)));
     }
 
     setupInput(number) {
         // TODO: fill it.
+        if (number < 1) {
+            return;
+        }
+        this.context.setValue("awaitingInput", true);
+        this.context.setValue("names", generateNames(number))
+        this.context.setValue("inputRange", number)
+    }
+
+    onFinishedTyping(text) {
+        this.progressGame(reverseName(text));
     }
 
     onAfterFullLoad() {
         var code = Sk.importMainWithBody("__main__", false, this.code, true);
         Sk.gameInterface.stepFunc = code.tp$getattr(Sk.builtin.str("step"));
-        this.progressGame(0);
+        this.context.onFinishedTyping(this.onFinishedTyping.bind(this));
+        this.progressGame(-1);
     }
 
     loadSkulpt() {
@@ -140,6 +228,8 @@ class SkulptRunner extends Component {
 
     componentDidMount() {
         if (!this.wasMounted) {
+            this.context.setValue("awaitingInput", false);
+
             this.loadSkulpt();
 
             if (this.code === "") {
@@ -160,7 +250,7 @@ class SkulptRunner extends Component {
     render() {
         return <>
             <ConsoleLine id={this.divid} >{this.isValid ? "Loading..." : `Story: ${this.props.name} not found.`}</ConsoleLine>
-            <InteractveSelection /><Cursor />
+            <GameInteractveSelection /><Cursor />
         </>
     }
 }
@@ -169,7 +259,8 @@ export class Game extends Component {
     render() {
         return (
             <Container id="game-wrappper">
-                <ConsoleLine isInput={true}>./run {this.props.name}</ConsoleLine><TypingContextProvider>
+                <ConsoleLine isInput={true}>./run {this.props.name}</ConsoleLine>
+                <TypingContextProvider>
                     <SkulptRunner story={this.props.story} name={this.props.name} />
                 </TypingContextProvider>
             </Container>

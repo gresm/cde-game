@@ -92,4 +92,8 @@ export class InteractveSelection extends Component {
     onKeyPressed(ev) {
 
     }
+
+    onSubmit() {
+        
+    }
 }
