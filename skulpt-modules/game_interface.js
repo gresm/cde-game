@@ -8,6 +8,15 @@ var $builtinmodule = function(name) {
         return Sk.ffi.remapToPy(Sk.gameInterface.story);
     });
 
+    mod.gameDiv = new Sk.builtin.func(function () {
+        if (Sk.divid !== undefined) {
+            return new Sk.builtin.str(Sk.divid);
+        }
+        else {
+            throw new Sk.builtin.AttributeError("There is no value set for divid");
+        }
+    });
+
     // function dflbrowser($gbl, $loc) {
     //     $loc.__init__ = new Sk.builtin.func(function __init__(self) {
     //         return Sk.builtin.none.none$;

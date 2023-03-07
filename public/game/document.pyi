@@ -17,8 +17,6 @@ def getElementsByClassName(cname: str) -> list[Element]:
 def getElementsByName(cname: str) -> list[Element]:
     pass
 
-def currentDiv() -> str:
-    pass
 
 class Element:
     innerHTML: str
@@ -45,4 +43,7 @@ class Element:
         pass
 
     def getProperty(self, key: str) -> str | None:
+        pass
+
+    def remove(self):
         pass
