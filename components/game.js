@@ -1,13 +1,13 @@
 "use strict";
 
 import { Component, createContext } from "react";
-import { ConsoleLine, Cursor, Container, InteractveSelection } from "./console";
+import { ConsoleLine, Cursor, Container, InteractveSelection, InlineDiv } from "./console";
 import { loadScriptsInQueue } from "../utils/scriptLoader";
 import skulptModules from "../generated/skulpt-extra";
 
 function generateNames(num) {
     var ret = [];
-    for (const v of Array(i).keys()) {
+    for (const v of Array(num).keys()) {
         ret.push(String.fromCharCode(97 + v));
     }
     return ret;
@@ -69,7 +69,15 @@ class TypingContextProvider extends Component {
             ...this.defaultState
         }
 
+        this.userState = {}
+
         this.triggersOnFinishedTyping = []
+    }
+
+    refreshState() {
+        this.setState({
+            ...this.defaultState, ...this.userState
+        })
     }
 
     bindOnFinishedTyping(func) {
@@ -83,7 +91,8 @@ class TypingContextProvider extends Component {
     }
 
     setValue(key, value) {
-        this.setState({ ...this.state, [key]: value });
+        this.userState[key] = value
+        this.refreshState()
     }
 
     getValue(key) {
@@ -107,7 +116,8 @@ class GameInteractveSelection extends InteractveSelection {
     static contextType = typingContext;
 
     onKeyPressed(ev) {
-        if (!this.state.awaitingInput) {
+        if (!this.context.awaitingInput) {
+            console.log("not wanted");
             return;
         }
         if (ev.key.length === 1) {
@@ -129,11 +139,18 @@ class GameInteractveSelection extends InteractveSelection {
 
     onSubmit() {
         var text = this.state.text;
-        if (!validateUserInput(text, this.state.inputRange)) {
+        if (!validateUserInput(text, this.context.inputRange)) {
             return;
         }
         this.updateState("text", "");
         this.context.triggerFinishedTyping(text);
+    }
+
+    componentDidMount() {
+        if (!this.mounted) {
+            document.addEventListener("keydown", this.onKeyPressed.bind(this))
+        }
+        this.mounted = true
     }
 }
 
@@ -197,8 +214,8 @@ class SkulptRunner extends Component {
         Sk.gameInterface.story = this.props.story;
     }
 
-    progressGame(feedback) {
-        this.setupInput(Sk.ffi.remapToJs(Sk.misceval.callsim(Sk.gameInterface.stepFunc, feedback)));
+    progressGame(feedback, text) {
+        this.setupInput(Sk.ffi.remapToJs(Sk.misceval.callsimArray(Sk.gameInterface.stepFunc, [feedback, text])));
     }
 
     setupInput(number) {
@@ -206,20 +223,24 @@ class SkulptRunner extends Component {
         if (number < 1) {
             return;
         }
+        if (number == 1) {
+            this.progressGame(0, "")
+            return;
+        }
         this.context.setValue("awaitingInput", true);
-        this.context.setValue("names", generateNames(number))
-        this.context.setValue("inputRange", number)
+        this.context.setValue("names", generateNames(number));
+        this.context.setValue("inputRange", number);
     }
 
     onFinishedTyping(text) {
-        this.progressGame(reverseName(text));
+        this.progressGame(reverseName(text), text);
     }
 
     onAfterFullLoad() {
         var code = Sk.importMainWithBody("__main__", false, this.code, true);
         Sk.gameInterface.stepFunc = code.tp$getattr(Sk.builtin.str("step"));
         this.context.onFinishedTyping(this.onFinishedTyping.bind(this));
-        this.progressGame(-1);
+        this.progressGame(-1, "");
     }
 
     loadSkulpt() {
@@ -249,8 +270,11 @@ class SkulptRunner extends Component {
 
     render() {
         return <>
-            <ConsoleLine id={this.divid} >{this.isValid ? "Loading..." : `Story: ${this.props.name} not found.`}</ConsoleLine>
-            <GameInteractveSelection /><Cursor />
+            <ConsoleLine id="to-remove-on-load" >{this.isValid ? "Loading..." : `Story: ${this.props.name} not found.`}</ConsoleLine>
+            <InlineDiv>
+                <div id={this.divid} />
+                <GameInteractveSelection /><Cursor />
+            </InlineDiv>
         </>
     }
 }
