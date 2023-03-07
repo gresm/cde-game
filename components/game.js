@@ -215,7 +215,7 @@ class SkulptRunner extends Component {
     }
 
     progressGame(feedback, text) {
-        this.setupInput(Sk.ffi.remapToJs(Sk.misceval.callsimArray(Sk.gameInterface.stepFunc, [feedback, text])));
+        this.setupInput(Sk.ffi.remapToJs(Sk.misceval.callsimArray(Sk.gameInterface.stepFunc, [Sk.builtin.int_(feedback), Sk.builtin.str(text)])));
     }
 
     setupInput(number) {
