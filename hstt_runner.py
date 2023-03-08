@@ -1,6 +1,17 @@
 """
 Utility script to run HSTT formatted json files.
 """
+import sys
+
+if sys.version == "3.7(ish) [Skulpt]":
+    class _getitem:
+        def __getitem__(self, name):
+            return name
+    
+    Optional = _getitem()
+    Union = _getitem()
+else:
+    from typing import Optional, Union
 
 
 class HSTTParserException(Exception):
@@ -85,7 +96,7 @@ class NodeOptions:
 
 
 class StoryNode:
-    def __init__(self, name: str, text: NodeText, options: NodeOptions, goto: str | None = None):
+    def __init__(self, name: str, text: NodeText, options: NodeOptions, goto: Optional[str] = None):
         self.name = name
         self.text = text
         self.goto = goto
@@ -95,7 +106,7 @@ class StoryNode:
         return f'{self.name}:\n{self.text}\n{self.options}'
 
     @classmethod
-    def parse(cls, data: dict[str, list[dict[str, str]] | dict[str, str]] | str):
+    def parse(cls, data: Union[dict[str, list[dict[str, str]], dict[str, str]], str]):
         """
         Parses story node from dictionary.
         """
@@ -118,7 +129,7 @@ class Story:
         return HSTTRunner(self)
 
     @classmethod
-    def parse(cls, data: dict[str, dict[str, list[dict[str, str]] | dict[str, str]] | str]):
+    def parse(cls, data: Union[dict[str, dict[str, list[dict[str, str]], dict[str, str]], str]]):
         """
         Parses story from dictionary.
         """
@@ -152,7 +163,7 @@ class Story:
 
 
 class HSTTRunnerCurrentNode:
-    def __init__(self, runner: HSTTRunner, text: NodeText, options: NodeOptions):
+    def __init__(self, runner: "HSTTRunner", text: NodeText, options: NodeOptions):
         self.runner = runner
         self.text = text
         self.options = options
@@ -174,7 +185,7 @@ class HSTTRunner:
     def __init__(self, story: Story):
         self.story = story
         self.current_node = self.story.nodes[""]
-        self.selected_option: str | None = None
+        self.selected_option: Union[str, None] = None
 
     def __iter__(self):
         return self

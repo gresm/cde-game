@@ -1,9 +1,9 @@
-from document2 import currentDiv, getElementById
+from document import getElementById
 
 import game_interface as game
 import hstt_runner
 
-gameDiv = getElementById(currentDiv())
+gameDiv = getElementById(game.gameDiv())
 
 
 class GameRunner:

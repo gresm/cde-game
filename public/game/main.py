@@ -1,9 +1,9 @@
-from document2 import currentDiv, getElementById
+from document import getElementById
 
 import game_interface as game
 import hstt_runner
-print("starting")
-gameDiv = getElementById(currentDiv())
+
+gameDiv = getElementById(game.gameDiv())
 
 
 class GameRunner:
@@ -15,7 +15,7 @@ game_runner = GameRunner(game.get_story())
 gameDiv.innerText = "Hello from python!"
 state = -1
 
-# getElementById("to-remove-on-load").remove()
+getElementById("to-remove-on-load").remove()
 
 def step(selected, text):
     global state
