@@ -184,7 +184,7 @@ class HSTTRunner:
     """
     def __init__(self, story: Story):
         self.story = story
-        self.current_node = self.story.nodes[""]
+        self.current_node: StoryNode = self.story.nodes[""]
         self.selected_option: Union[str, None] = None
 
     def __iter__(self):
@@ -193,3 +193,12 @@ class HSTTRunner:
     def __next__(self):
         if self.current_node.goto:
             self.current_node = self.story.nodes[self.current_node.goto]
+            return 0
+        
+        if len(self.current_node.options.options):
+            len(self.current_node.options.options)
+        
+        raise StopIteration
+    
+    def choose(self, what: int):
+        self.current_node = self.story.nodes[self.current_node.options.options[what].goto]

@@ -9,6 +9,7 @@ gameDiv = getElementById(game.gameDiv())
 class GameRunner:
     def __init__(self, story) -> None:
         self.story = story
+        self.runner = hstt_runner.HSTTRunner(hstt_runner.Story.parse(story))
 
 
 game_runner = GameRunner(game.get_story())
@@ -21,17 +22,4 @@ def step(selected, text):
     global state
 
     selected = int(selected)
-    text = str(text)
-    gameDiv.innerText += text
-
-    if selected == -1:
-        state = 0
-        gameDiv.innerText += "\nFirst step"
-        return 2
-    
-    if state == 0:
-        if selected == 0:
-            gameDiv.innerText += "\nOption a"
-        else:
-            gameDiv.innerText += "\nOption b"
-        return 2
+    typed = str(text)
