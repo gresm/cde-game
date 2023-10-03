@@ -202,8 +202,8 @@ def _load_file(file: str):
         return f.read()
 
 
-def _write_to_file(file: str, text: str):
-    with open(file, "w", encoding="utf-8") as f:
+def _write_to_file(file: str, text: str, newline: bool = False):
+    with open(file, "w", encoding="utf-8", newline=newline) as f:
         f.write(text)
         return text
 
@@ -225,9 +225,9 @@ def dumps_file(file: str):
     return dumps(_load_file(file))
 
 
-def dumps_to_file(text: str, output_file: str):
-    return _write_to_file(output_file, dumps(text))
+def dumps_to_file(text: str, output_file: str, newline: bool = False):
+    return _write_to_file(output_file, dumps(text), newline)
 
 
-def convert_file(input_file: str, output_file: str):
-    return _write_to_file(output_file, dumps_file(input_file))
+def convert_file(input_file: str, output_file: str, newline: bool = False):
+    return _write_to_file(output_file, dumps_file(input_file), newline)

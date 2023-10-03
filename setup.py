@@ -10,7 +10,8 @@ from subprocess import PIPE, STDOUT, Popen
 
 import psutil
 
-from stories.generate import main as generate_stories
+from stories.generate import main as _generate_stories
+from hstt_to_json import convert_file
 
 game_dir = Path("game")
 game_dest = Path("public/game")
@@ -22,6 +23,14 @@ generated_lib = Path("generated/skulpt-extra.js")
 mainpy = Path("game/main.py")
 mainpy_static = Path("public/game/main.py")
 setup_file = Path(__file__)
+
+test_hstt = Path("test.hstt")
+test_json = Path("test.hstt.json")
+
+def generate_stories():
+    print("Generating story trees...")
+    _generate_stories()
+    convert_file(str(test_hstt), str(test_json), True)
 
 
 def main():
@@ -36,7 +45,6 @@ def main():
     copyfile(hstt_to_json, hstt_json_dest)
 
     # Generate story trees.
-    print("Generating story trees.")
     generate_stories()
 
     # Compress skulpt additional modules.

@@ -52,7 +52,7 @@ class OptionElement:
     Class to represent option element.
     """
 
-    def __init__(self, text: str, goto: str):
+    def __init__(self, goto: str, text: str):
         self.text = text
         self.goto = goto
 
@@ -119,7 +119,8 @@ class StoryNode:
 
 
 class Story:
-    def __init__(self, nodes: dict[str, StoryNode]):
+    def __init__(self, title: str, nodes: dict[str, StoryNode]):
+        self.title = title
         self.nodes = nodes
 
     def __repr__(self):
@@ -136,7 +137,7 @@ class Story:
         """
         Parses story from dictionary.
         """
-        ret = cls({name: StoryNode.parse(name, value) for name, value in data.items() if isinstance(value, dict)})
+        ret = cls(data["title"], {name: StoryNode.parse(name, value) for name, value in data["nodes"].items()})
         ret.validate()
         return ret
 
@@ -146,14 +147,14 @@ class Story:
         """
         for node_name in self.nodes:
             node = self.nodes[node_name]
-            if node.goto and node_name not in self.nodes:
+            if node.goto is not None and node.goto not in self.nodes:
                 raise HSTTParserException(
                     f"Node {node_name} has goto {node.goto} but there is not such location."
                 )
 
             if node.options:
                 for option in node.options.options:
-                    if option not in self.nodes:
+                    if option.goto not in self.nodes:
                         raise HSTTParserException(
                             f"Node {node_name} has option {option.text} -> {option.goto} but "
                             f"there is not such location."
