@@ -53,5 +53,6 @@ async function bundleDirectory(dir) {
 
 bundleDirectory("./skulpt-modules").then((v) => {
     console.log(`// This file was automatically generated. Don't change it.
-export default JSON.parse(String.raw\`${JSON.stringify(v)}\`);`);
+const val = ${JSON.stringify(v)};
+export default val;`);
 });

@@ -27,47 +27,48 @@ When person is forced to be sent to different node, instead of # use !.
 The text above converts into this json file:
 
     {
-        "": {
-            "text": [
-                {"type": "text", "text": "The title."}
-                {"type": "text", "text": "This is an entry node, the name of it is empty."}
-            ],
-            "goto": "node_name"
-        },
-        "node_name": {
-            "text": [
-                    {"type": "text", "text": "Text to be displayed,\nThat has multiline support."}
-            ],
-            "options": {
-                    "next_node": "Option 1",
-                    "other_next_node": "Option 2"
-            }
-        },
-        "next_node": {
-            "text": [
-                    {"type": "text", "text": "This text is displayed if the player selects the first option."},
-                    {"type": "alert", "text": "For example text between stars, will be shown as an alert."},
-                    {
-                        "type": "goto", "destination": "next_node",
-                        "text": "When person is forced to be sent to different node, instead of # use !"
-                    },
-                    {"type": "text", "text": "When person is forced to be sent to different node, instead of # use !"}
-            ],
-            "goto": "destination": "next_node"
-        },
-        "other_next_node": {
-            "text": [
-                    {"type": "text", "text": "This text is displayed if the player selects the second option."}
-            ]
-        },
-        "title": "The title"
+        "nodes": {
+            "": {
+                "text": [
+                    {"type": "text", "text": "This is an entry node, the name of it is empty."}
+                ],
+                "goto": "node_name"
+            },
+            "node_name": {
+                "text": [
+                        {"type": "text", "text": "Text to be displayed,\nThat has multiline support."}
+                ],
+                "options": {
+                        "next_node": "Option 1",
+                        "other_next_node": "Option 2"
+                }
+            },
+            "next_node": {
+                "text": [
+                        {"type": "text", "text": "This text is displayed if the player selects the first option."},
+                        {"type": "alert", "text": "For example text between stars, will be shown as an alert."},
+                        {
+                            "type": "goto", "destination": "next_node",
+                            "text": "When person is forced to be sent to different node, instead of # use !"
+                        },
+                        {"type": "text", "text": "When person is forced to be sent to different node, instead of # use !"}
+                ],
+                "goto": "destination": "next_node"
+            },
+            "other_next_node": {
+                "text": [
+                        {"type": "text", "text": "This text is displayed if the player selects the second option."}
+                ]
+            },
+        }
+        "title": "The title",
     }
 
 """
 import json
 from enum import Enum
 
-__version__ = (1, 1, 1)
+__version__ = (1, 1, 2)
 
 
 class HSTTParserException(Exception):
@@ -127,12 +128,12 @@ class HSTTParserState:
 class HSTTToJSON:
     def __init__(self, text: str):
         self.lines = text.split("\n")
+        self.lines.append("")  # Guard value.
+        self.text = text
         if self.get_line_type(self.lines[0]) == LineType.TEXT:
-            self.title = self.lines[0]
-            self.text = text[len(self.title) + 1 :]
+            self.title = self.lines.pop(0)
         else:
             self.title = ""
-            self.text = text
         self.state = HSTTParserState()
         self.nodes = {}
 
@@ -154,8 +155,7 @@ class HSTTToJSON:
         for line in self.lines:
             self.parse_line(line.replace("\\n", "\n"))
         self.add_current_node()
-        self.nodes["title"] = self.title
-        return self.nodes
+        return {"nodes": self.nodes, "title": self.title}
 
     def add_current_node(self):
         self.nodes.update(self.state.get_node())

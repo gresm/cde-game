@@ -69,13 +69,17 @@ def compress_skulpt_modules():
 
 def restart_listener():
     print("Setup file changed, restarting...")
-    os.execl(sys.executable, "python", *sys.argv)
+    try:
+        os.execl(sys.executable, "python", *sys.argv)
+    except Exception as e:
+        print("exception curred", e, " Quitting...")
+        sys.exit()
 
 
 files_to_listen: list[tuple[bool, Path, Path]] = [
     (None, mainpy, mainpy_static),
     (compress_skulpt_modules, hstt_runner, hstt_dest),
-    (compress_skulpt_modules, hstt_to_json, hstt_json_dest),
+    (generate_stories, hstt_to_json, hstt_json_dest),
     (restart_listener, setup_file, setup_file),
 ]
 

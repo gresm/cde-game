@@ -7,7 +7,8 @@ except ImportError:
     from hstt_to_json import parse
 
 output_file_template = """// This file was automatically generated. Don't change it.
-export default JSON.parse(String.raw`{}`);
+const val = {};
+export default val;
 """
 
 current_file = Path(__file__)
