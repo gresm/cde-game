@@ -251,10 +251,23 @@ class SkulptRunner extends Component {
     }
 
     onAfterFullLoad() {
-        var code = Sk.importMainWithBody("__main__", false, this.code, true);
-        Sk.gameInterface.stepFunc = code.tp$getattr(Sk.builtin.str("step"));
-        this.context.onFinishedTyping(this.onFinishedTyping.bind(this));
-        this.progressGame(-1, "");
+        try {
+            var code = Sk.importMainWithBody(
+                "__main__",
+                false,
+                this.code,
+                true,
+            );
+            Sk.gameInterface.stepFunc = code.tp$getattr(Sk.builtin.str("step"));
+            this.context.onFinishedTyping(this.onFinishedTyping.bind(this));
+            this.progressGame(-1, "");
+        } catch (err) {
+            if (err.toString !== undefined) {
+                console.error(err.toString());
+                globalThis["skulptError"] = err;
+            }
+            throw err;
+        }
     }
 
     loadSkulpt() {

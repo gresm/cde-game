@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import sys
 import time
@@ -6,28 +8,40 @@ from pathlib import Path
 from shutil import copyfile, copytree
 from subprocess import PIPE, STDOUT, Popen
 
+import psutil
+
 from stories.generate import main as generate_stories
+
+game_dir = Path("game")
+game_dest = Path("public/game")
+hstt_runner = Path("hstt_runner.py")
+hstt_dest = Path("skulpt-modules/hstt_runner.py")
+generated_lib = Path("generated/skulpt-extra.js")
+mainpy = Path("game/main.py")
+mainpy_static = Path("public/game/main.py")
+setup_file = Path(__file__)
 
 
 def main():
     # Copy game/ folder to public/
     print("Copying game/ -> public/")
-    game_dir = Path("game")
-    dest = Path("public/game")
-    copytree(game_dir, dest, dirs_exist_ok=True)
+    copytree(game_dir, game_dest, dirs_exist_ok=True)
 
     # Copy hstt_runner.py -> skulpt-modules/hstt_runner.py
     print("Copying hstt_runner.py -> skulpt-modules/hstt_runner.py")
-    hstt_runner = Path("hstt_runner.py")
-    dest = Path("skulpt-modules/hstt_runner.py")
-    copyfile(hstt_runner, dest)
+    copyfile(hstt_runner, hstt_dest)
 
     # Generate story trees.
     print("Generating story trees.")
     generate_stories()
 
     # Compress skulpt additional modules.
+    compress_skulpt_modules()
+
+
+def compress_skulpt_modules():
     print("Compressing additional skulpt libraries.")
+
     process = Popen(
         ["node", "skulpt-modules/bundling/compress.js"],
         stdin=PIPE,
@@ -43,36 +57,53 @@ def main():
 
     code = process.stdout.read().decode("utf-8")[:-1]
     print("Exporting compressed libraries.")
-    out_file = Path("generated/skulpt-extra.js")
-    out_file.touch()
+    generated_lib.touch()
 
-    with out_file.open("w") as _writer:
+    with generated_lib.open("w") as _writer:
         _writer.write(code)
 
 
+def restart_listener():
+    print("Setup file changed, restarting...")
+    os.execl(sys.executable, "python", *sys.argv)
+
+
+files_to_listen: list[tuple[bool, Path, Path]] = [
+    (None, mainpy, mainpy_static),
+    (compress_skulpt_modules, hstt_runner, hstt_dest),
+    (restart_listener, setup_file, setup_file),
+]
+
+
 def listen(pid: int):
-    try:
-        import psutil
-    except ImportError:
-        os.system("python -m pip install psutil")
-        import importlib as _iplib
-
-        psutil = _iplib.import_module("psutil")
-
-    print("Spawning a listener for changes in game/main.py...")
-    mainpy = Path("game/main.py")
-    mainpy_static = Path("public/game/main.py")
+    print("Spawning a listener for changes in files.")
+    file_modified_times: dict[str, list[int, float]] = {
+        str(val[1]): [idx, val[1].stat().st_mtime]
+        for idx, val in enumerate(files_to_listen)
+    }
 
     try:
         while psutil.pid_exists(pid):
             time.sleep(5)
 
+            if not psutil.pid_exists(pid):
+                break
+
             # print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(mainpy.stat().st_mtime)))
             # print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(mainpy_static.stat().st_mtime)))
+            for name, val in file_modified_times.items():
+                if files_to_listen[val[0]][1].stat().st_mtime > val[1]:
+                    print(
+                        f"File {name} changed. Updating {str(files_to_listen[val[0]][2])}"
+                    )
 
-            if mainpy.stat().st_mtime > mainpy_static.stat().st_mtime:
-                print("File game/main.py changed. Updating public/game/main.py")
-                copyfile(mainpy, mainpy_static)
+                    if files_to_listen[val[0]][1] != files_to_listen[val[0]][2]:
+                        copyfile(files_to_listen[val[0]][1], files_to_listen[val[0]][2])
+
+                    val[1] = files_to_listen[val[0]][1].stat().st_mtime
+
+                    if files_to_listen[val[0]][0] is not None:
+                        files_to_listen[val[0]][0]()
         print("Parent process ended, exiting from listener...")
     except KeyboardInterrupt:
         print("Exiting from listener...")
