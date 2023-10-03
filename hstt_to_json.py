@@ -3,6 +3,7 @@ This file utility converts HSTT (HiSTory Tree format) files to JSON files that c
 HSTT files are text files containing dialogue trees.
 Format of such file looks like this:
 
+The title
 This is an entry node, the name of it is empty.
 !node_name
 #node_name
@@ -28,6 +29,7 @@ The text above converts into this json file:
     {
         "": {
             "text": [
+                {"type": "text", "text": "The title."}
                 {"type": "text", "text": "This is an entry node, the name of it is empty."}
             ],
             "goto": "node_name"
@@ -57,14 +59,15 @@ The text above converts into this json file:
             "text": [
                     {"type": "text", "text": "This text is displayed if the player selects the second option."}
             ]
-        }
+        },
+        "title": "The title"
     }
 
 """
 import json
 from enum import Enum
 
-__version__ = (1, 0, 0)
+__version__ = (1, 1, 1)
 
 
 class HSTTParserException(Exception):
@@ -123,8 +126,13 @@ class HSTTParserState:
 
 class HSTTToJSON:
     def __init__(self, text: str):
-        self.text = text
         self.lines = text.split("\n")
+        if self.get_line_type(self.lines[0]) == LineType.TEXT:
+            self.title = self.lines[0]
+            self.text = text[len(self.title) + 1 :]
+        else:
+            self.title = ""
+            self.text = text
         self.state = HSTTParserState()
         self.nodes = {}
 
@@ -146,6 +154,7 @@ class HSTTToJSON:
         for line in self.lines:
             self.parse_line(line.replace("\\n", "\n"))
         self.add_current_node()
+        self.nodes["title"] = self.title
         return self.nodes
 
     def add_current_node(self):

@@ -252,6 +252,7 @@ class SkulptRunner extends Component {
 
     onAfterFullLoad() {
         try {
+            console.log(this.props.story);
             var code = Sk.importMainWithBody(
                 "__main__",
                 false,
@@ -263,7 +264,20 @@ class SkulptRunner extends Component {
             this.progressGame(-1, "");
         } catch (err) {
             if (err.toString !== undefined) {
-                console.error(err.toString());
+                let codePeek = "";
+                if (err.traceback !== undefined) {
+                    err.traceback.forEach((value) => {
+                        codePeek += `\nIn file: ${value.filename} on line ${value.lineno}\n`;
+                        codePeek += String(
+                            value.filename === "__main__.py"
+                                ? this.code
+                                : skulptModules[value.filename],
+                        )
+                            .split("\n", Number(value.lineno))
+                            .pop();
+                    });
+                }
+                console.error(err.toString() + codePeek);
                 globalThis["skulptError"] = err;
             }
             throw err;

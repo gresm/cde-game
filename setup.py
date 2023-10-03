@@ -16,6 +16,8 @@ game_dir = Path("game")
 game_dest = Path("public/game")
 hstt_runner = Path("hstt_runner.py")
 hstt_dest = Path("skulpt-modules/hstt_runner.py")
+hstt_to_json = Path("hstt_to_json.py")
+hstt_json_dest = Path("stories/hstt_to_json.py")
 generated_lib = Path("generated/skulpt-extra.js")
 mainpy = Path("game/main.py")
 mainpy_static = Path("public/game/main.py")
@@ -30,6 +32,8 @@ def main():
     # Copy hstt_runner.py -> skulpt-modules/hstt_runner.py
     print("Copying hstt_runner.py -> skulpt-modules/hstt_runner.py")
     copyfile(hstt_runner, hstt_dest)
+
+    copyfile(hstt_to_json, hstt_json_dest)
 
     # Generate story trees.
     print("Generating story trees.")
@@ -71,6 +75,7 @@ def restart_listener():
 files_to_listen: list[tuple[bool, Path, Path]] = [
     (None, mainpy, mainpy_static),
     (compress_skulpt_modules, hstt_runner, hstt_dest),
+    (compress_skulpt_modules, hstt_to_json, hstt_json_dest),
     (restart_listener, setup_file, setup_file),
 ]
 

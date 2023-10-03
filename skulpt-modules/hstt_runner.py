@@ -1,18 +1,7 @@
 """
 Utility script to run HSTT formatted json files.
 """
-import sys
-
-if sys.version == "3.7(ish) [Skulpt]":
-
-    class _getitem:
-        def __getitem__(self, name):
-            return name
-
-    Optional = _getitem()
-    Union = _getitem()
-else:
-    from typing import Optional, Union
+from typing import Optional, Union
 
 
 class HSTTParserException(Exception):
@@ -117,15 +106,15 @@ class StoryNode:
         return f"{self.name}:\n{self.text}\n{self.options}"
 
     @classmethod
-    def parse(cls, data: Union[dict[str, list[dict[str, str]], dict[str, str]], str]):
+    def parse(cls, name: str, data: dict[str, list[dict[str, str]], dict[str, str]]):
         """
         Parses story node from dictionary.
         """
         return cls(
-            data["name"],
+            name,
             NodeText.parse(data["text"]),
             NodeOptions.parse(data.get("options", {})),
-            data.get("goto"),
+            data.get("goto", None),
         )
 
 
@@ -142,12 +131,12 @@ class Story:
     @classmethod
     def parse(
         cls,
-        data: Union[dict[str, dict[str, list[dict[str, str]], dict[str, str]], str]],
+        data: dict[str, dict[str, list[dict[str, str]], dict[str, str]]],
     ):
         """
         Parses story from dictionary.
         """
-        ret = cls({name: StoryNode.parse(data[name]) for name in data})
+        ret = cls({name: StoryNode.parse(name, value) for name, value in data.items() if isinstance(value, dict)})
         ret.validate()
         return ret
 

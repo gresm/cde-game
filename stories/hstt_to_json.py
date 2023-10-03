@@ -29,6 +29,7 @@ The text above converts into this json file:
     {
         "": {
             "text": [
+                {"type": "text", "text": "The title."}
                 {"type": "text", "text": "This is an entry node, the name of it is empty."}
             ],
             "goto": "node_name"
@@ -58,7 +59,8 @@ The text above converts into this json file:
             "text": [
                     {"type": "text", "text": "This text is displayed if the player selects the second option."}
             ]
-        }
+        },
+        "title": "The title"
     }
 
 """
