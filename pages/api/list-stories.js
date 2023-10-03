@@ -1,18 +1,17 @@
-import { getLoader } from "../../stories/server"
+import { getLoader } from "../../stories/server";
 
-var loader = getLoader()
+var loader = getLoader();
 
 /**
  * @typedef { import("next").NextApiRequest } NextApiRequest
  * @typedef { import("next").NextApiResponse } NextApiResponse
  */
 
-
 /**
- * 
- * @param { NextApiRequest } req 
- * @param { NextApiResponse } res 
+ *
+ * @param { NextApiRequest } req
+ * @param { NextApiResponse } res
  */
 export default function listStories(req, res) {
-    res.status(200).json(loader.collectStoryNames())
+    res.status(200).json(loader.collectStoryNames());
 }

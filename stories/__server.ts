@@ -1,42 +1,42 @@
-import { data } from "./stories_json"
+import { data } from "./stories_json";
 
 export interface StoriesData {
-    index: {[name: string]: string}
-    stories: {[name: string]: string}
+    index: { [name: string]: string };
+    stories: { [name: string]: string };
 }
 
 export class StoriesMenager {
-    data: StoriesData
-    indexes: {[name: string]: string}
-    stories: {[name: string]: string}
+    data: StoriesData;
+    indexes: { [name: string]: string };
+    stories: { [name: string]: string };
 
     constructor(data: StoriesData) {
-        this.data = data
-        this.indexes = data.index
-        this.stories = data.stories
+        this.data = data;
+        this.indexes = data.index;
+        this.stories = data.stories;
     }
 
-    public collectStoryNames() : {[name: string]: string} {
-        return this.indexes
+    public collectStoryNames(): { [name: string]: string } {
+        return this.indexes;
     }
 
-    public getStory(name: string) : string {
-        if (name in this.stories){
-            return this.stories[name]
+    public getStory(name: string): string {
+        if (name in this.stories) {
+            return this.stories[name];
         }
-        return ""
+        return "";
     }
 
-    public storyExists(name: string) : boolean {
-        return name in this.stories
+    public storyExists(name: string): boolean {
+        return name in this.stories;
     }
 }
 
-let defaultMenager: StoriesMenager
+let defaultMenager: StoriesMenager;
 
 export function getLoader() {
     if (typeof defaultMenager === "undefined") {
-        defaultMenager = new StoriesMenager(data)
+        defaultMenager = new StoriesMenager(data);
     }
-    return defaultMenager
+    return defaultMenager;
 }

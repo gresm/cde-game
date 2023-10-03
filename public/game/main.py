@@ -1,6 +1,6 @@
+import game_interface as game
 from document import getElementById
 
-import game_interface as game
 import hstt_runner
 
 gameDiv = getElementById(game.gameDiv())
@@ -17,6 +17,7 @@ state = -1
 
 getElementById("to-remove-on-load").remove()
 
+
 def step(selected, text):
     global state
 
@@ -28,7 +29,7 @@ def step(selected, text):
         state = 0
         gameDiv.innerText += "\nFirst step"
         return 2
-    
+
     if state == 0:
         if selected == 0:
             gameDiv.innerText += "\nOption a"

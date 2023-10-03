@@ -1,4 +1,4 @@
-var $builtinmodule = function(name) {
+var $builtinmodule = function (name) {
     var mod = {};
 
     mod.__name__ = new Sk.builtin.str("game_interface");
@@ -11,9 +11,10 @@ var $builtinmodule = function(name) {
     mod.gameDiv = new Sk.builtin.func(function () {
         if (Sk.divid !== undefined) {
             return new Sk.builtin.str(Sk.divid);
-        }
-        else {
-            throw new Sk.builtin.AttributeError("There is no value set for divid");
+        } else {
+            throw new Sk.builtin.AttributeError(
+                "There is no value set for divid",
+            );
         }
     });
 

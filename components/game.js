@@ -1,7 +1,13 @@
 "use strict";
 
 import { Component, createContext } from "react";
-import { ConsoleLine, Cursor, Container, InteractveSelection, InlineDiv } from "./console";
+import {
+    ConsoleLine,
+    Cursor,
+    Container,
+    InteractveSelection,
+    InlineDiv,
+} from "./console";
 import { loadScriptsInQueue } from "../utils/scriptLoader";
 import skulptModules from "../generated/skulpt-extra";
 
@@ -13,10 +19,9 @@ function generateNames(num) {
     return ret;
 }
 
-
 /**
- * 
- * @param {String} char 
+ *
+ * @param {String} char
  * @returns {Number}
  */
 function reverseName(char) {
@@ -24,8 +29,8 @@ function reverseName(char) {
 }
 
 /**
- * 
- * @param {String} text 
+ *
+ * @param {String} text
  * @param {Number} range
  * @returns {Boolean}
  */
@@ -36,19 +41,18 @@ function validateUserInput(text, range) {
     return 0 <= reverseName(text) < range;
 }
 
-
 /**
  * @typedef { {getValue: (key: string) => Object, setValue: (key: string, value: Object) => void, resetState: () => void, onFinishedTyping: (func: (text: string) => void) => void, triggerFinishedTyping: (text: string) => void} } TypingContextData
  * @type {import("react").Context<TypingContextData>}
  */
 
 var typingContext = createContext({
-    resetState: () => { },
-    getValue: (key) => { },
-    setValue: (key, value) => { },
-    onFinishedTyping: (func) => { },
-    triggerFinishedTyping: (text) => { }
-})
+    resetState: () => {},
+    getValue: (key) => {},
+    setValue: (key, value) => {},
+    onFinishedTyping: (func) => {},
+    triggerFinishedTyping: (text) => {},
+});
 
 class TypingContextProvider extends Component {
     constructor(props) {
@@ -60,39 +64,40 @@ class TypingContextProvider extends Component {
             resetState: this.resetState.bind(this),
             setValue: this.setValue.bind(this),
             getValue: this.getValue.bind(this),
-        }
+        };
 
         /**
          * @type {TypingContextData}
-        */
+         */
         this.state = {
-            ...this.defaultState
-        }
+            ...this.defaultState,
+        };
 
-        this.userState = {}
+        this.userState = {};
 
-        this.triggersOnFinishedTyping = []
+        this.triggersOnFinishedTyping = [];
     }
 
     refreshState() {
         this.setState({
-            ...this.defaultState, ...this.userState
-        })
+            ...this.defaultState,
+            ...this.userState,
+        });
     }
 
     bindOnFinishedTyping(func) {
-        this.triggersOnFinishedTyping.push(func)
+        this.triggersOnFinishedTyping.push(func);
     }
 
     callOnFinishedTyping(text) {
-        this.triggersOnFinishedTyping.forEach(element => {
+        this.triggersOnFinishedTyping.forEach((element) => {
             element(text);
         });
     }
 
     setValue(key, value) {
-        this.userState[key] = value
-        this.refreshState()
+        this.userState[key] = value;
+        this.refreshState();
     }
 
     getValue(key) {
@@ -108,7 +113,7 @@ class TypingContextProvider extends Component {
             <typingContext.Provider value={this.state}>
                 {this.props.children}
             </typingContext.Provider>
-        )
+        );
     }
 }
 
@@ -121,19 +126,18 @@ class GameInteractveSelection extends InteractveSelection {
             return;
         }
         if (ev.key.length === 1) {
-            this.updateState("text", this.state.text + ev.key)
-        }
-        else if (ev.key === "Backspace") {
-            this.updateState("text", this.state.text.substring(0, this.state.text.length - 1))
-        }
-        else if (ev.key === "Enter") {
-            this.onSubmit()
-        }
-        else if (ev.key == "ArrowUp" || ev.key == "ArrowLeft") {
-            this.upSelection()
-        }
-        else if (ev.key == "ArrowDown" || ev.key == "ArrowRight") {
-            this.downSelection()
+            this.updateState("text", this.state.text + ev.key);
+        } else if (ev.key === "Backspace") {
+            this.updateState(
+                "text",
+                this.state.text.substring(0, this.state.text.length - 1),
+            );
+        } else if (ev.key === "Enter") {
+            this.onSubmit();
+        } else if (ev.key == "ArrowUp" || ev.key == "ArrowLeft") {
+            this.upSelection();
+        } else if (ev.key == "ArrowDown" || ev.key == "ArrowRight") {
+            this.downSelection();
         }
     }
 
@@ -148,9 +152,9 @@ class GameInteractveSelection extends InteractveSelection {
 
     componentDidMount() {
         if (!this.mounted) {
-            document.addEventListener("keydown", this.onKeyPressed.bind(this))
+            document.addEventListener("keydown", this.onKeyPressed.bind(this));
         }
-        this.mounted = true
+        this.mounted = true;
     }
 }
 
@@ -173,7 +177,7 @@ class SkulptRunner extends Component {
         /**
          * @type {TypingContextData}
          */
-        this.context = this.context
+        this.context = this.context;
     }
 
     skulptMainLoaded = () => {
@@ -182,7 +186,7 @@ class SkulptRunner extends Component {
         if (this.mainLoaded && this.libLoaded) {
             this.skulptLoaded();
         }
-    }
+    };
 
     skulptStdlibLoaded = () => {
         this.libLoaded = true;
@@ -191,11 +195,14 @@ class SkulptRunner extends Component {
             this.skulptLoaded();
             this.onAfterFullLoad();
         }
-    }
+    };
 
     skulptLoaded() {
         function builtinRead(x) {
-            if (Sk.builtinFiles !== undefined && Sk.builtinFiles["files"][x] !== undefined) {
+            if (
+                Sk.builtinFiles !== undefined &&
+                Sk.builtinFiles["files"][x] !== undefined
+            ) {
                 return Sk.builtinFiles["files"][x];
             }
 
@@ -206,7 +213,7 @@ class SkulptRunner extends Component {
 
         Sk.configure({
             __future__: Sk.python3,
-            read: builtinRead
+            read: builtinRead,
         });
 
         Sk.divid = this.divid;
@@ -215,7 +222,14 @@ class SkulptRunner extends Component {
     }
 
     progressGame(feedback, text) {
-        this.setupInput(Sk.ffi.remapToJs(Sk.misceval.callsimArray(Sk.gameInterface.stepFunc, [Sk.builtin.int_(feedback), Sk.builtin.str(text)])));
+        this.setupInput(
+            Sk.ffi.remapToJs(
+                Sk.misceval.callsimArray(Sk.gameInterface.stepFunc, [
+                    Sk.builtin.int_(feedback),
+                    Sk.builtin.str(text),
+                ]),
+            ),
+        );
     }
 
     setupInput(number) {
@@ -224,7 +238,7 @@ class SkulptRunner extends Component {
             return;
         }
         if (number == 1) {
-            this.progressGame(0, "")
+            this.progressGame(0, "");
             return;
         }
         this.context.setValue("awaitingInput", true);
@@ -244,7 +258,10 @@ class SkulptRunner extends Component {
     }
 
     loadSkulpt() {
-        loadScriptsInQueue([this.skulpt, this.skulptSdt], [this.skulptMainLoaded, this.skulptStdlibLoaded])
+        loadScriptsInQueue(
+            [this.skulpt, this.skulptSdt],
+            [this.skulptMainLoaded, this.skulptStdlibLoaded],
+        );
     }
 
     componentDidMount() {
@@ -260,8 +277,8 @@ class SkulptRunner extends Component {
                         if (this.mainLoaded && this.libLoaded) {
                             this.onAfterFullLoad();
                         }
-                    })
-                })
+                    });
+                });
             }
         }
 
@@ -269,13 +286,20 @@ class SkulptRunner extends Component {
     }
 
     render() {
-        return <>
-            <ConsoleLine id="to-remove-on-load" >{this.isValid ? "Loading..." : `Story: ${this.props.name} not found.`}</ConsoleLine>
-            <InlineDiv>
-                <div id={this.divid} />
-                <GameInteractveSelection /><Cursor />
-            </InlineDiv>
-        </>
+        return (
+            <>
+                <ConsoleLine id="to-remove-on-load">
+                    {this.isValid
+                        ? "Loading..."
+                        : `Story: ${this.props.name} not found.`}
+                </ConsoleLine>
+                <InlineDiv>
+                    <div id={this.divid} />
+                    <GameInteractveSelection />
+                    <Cursor />
+                </InlineDiv>
+            </>
+        );
     }
 }
 
@@ -283,11 +307,16 @@ export class Game extends Component {
     render() {
         return (
             <Container id="game-wrappper">
-                <ConsoleLine isInput={true}>./run {this.props.name}</ConsoleLine>
+                <ConsoleLine isInput={true}>
+                    ./run {this.props.name}
+                </ConsoleLine>
                 <TypingContextProvider>
-                    <SkulptRunner story={this.props.story} name={this.props.name} />
+                    <SkulptRunner
+                        story={this.props.story}
+                        name={this.props.name}
+                    />
                 </TypingContextProvider>
             </Container>
-        )
+        );
     }
 }

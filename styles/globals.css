@@ -1,37 +1,37 @@
 html,
 body {
-  padding: 0;
-  margin: 0;
-  height: 100%;
-  width: 100%;
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
 }
 
 a {
-  color: inherit;
-  /*text-decoration: none;*/
+    color: inherit;
+    /*text-decoration: none;*/
 }
 
 div {
-  display: inherit;
+    display: inherit;
 }
 
 .fullscreen {
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  bottom: 0px;
-  left: 0px;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
 }
 
 .inline-div {
-  display: flex;
-  white-space: pre-wrap;
-  justify-content: flex-start;
-  flex-direction: row;
+    display: flex;
+    white-space: pre-wrap;
+    justify-content: flex-start;
+    flex-direction: row;
 }
 
 .game-container {
-  width: fit-content;
-  height: fit-content;
-  position: absolute;
+    width: fit-content;
+    height: fit-content;
+    position: absolute;
 }

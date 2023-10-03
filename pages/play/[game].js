@@ -1,6 +1,6 @@
-import { getLoader } from "../../stories/server"
-import { Game } from "../../components/game"
-import { Component } from "react"
+import { getLoader } from "../../stories/server";
+import { Game } from "../../components/game";
+import { Component } from "react";
 
 /**
  * @typedef { import("next").NextApiRequest } NextApiRequest
@@ -10,26 +10,27 @@ import { Component } from "react"
 
 export default class PlayGame extends Component {
     constructor(props) {
-        super(props)
-        var { story, name } = props
-        this.story = story
-        this.name = name
+        super(props);
+        var { story, name } = props;
+        this.story = story;
+        this.name = name;
     }
 
     render() {
-        return <Game story={this.story} name={this.name} />
+        return <Game story={this.story} name={this.name} />;
     }
 }
 
 /**
- * 
- * @param { GetServerSidePropsContext } ctx 
- * @returns 
+ *
+ * @param { GetServerSidePropsContext } ctx
+ * @returns
  */
 export async function getServerSideProps(ctx) {
     return {
         props: {
-            story: getLoader().getStory(ctx.query.game), name: ctx.query.game
-        }
-    }
+            story: getLoader().getStory(ctx.query.game),
+            name: ctx.query.game,
+        },
+    };
 }

@@ -1,9 +1,12 @@
-import os, time, sys
-from shutil import copytree, copyfile
-from pathlib import Path
-from stories.generate import main as generate_stories
-from subprocess import Popen, PIPE, STDOUT
+import os
+import sys
+import time
 from argparse import ArgumentParser
+from pathlib import Path
+from shutil import copyfile, copytree
+from subprocess import PIPE, STDOUT, Popen
+
+from stories.generate import main as generate_stories
 
 
 def main():
@@ -25,7 +28,12 @@ def main():
 
     # Compress skulpt additional modules.
     print("Compressing additional skulpt libraries.")
-    process = Popen(["node", "skulpt-modules/bundling/compress.js"], stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+    process = Popen(
+        ["node", "skulpt-modules/bundling/compress.js"],
+        stdin=PIPE,
+        stdout=PIPE,
+        stderr=STDOUT,
+    )
     error_code = process.wait()
 
     if error_code != 0:
@@ -48,8 +56,9 @@ def listen(pid: int):
     except ImportError:
         os.system("python -m pip install psutil")
         import importlib as _iplib
+
         psutil = _iplib.import_module("psutil")
-    
+
     print("Spawning a listener for changes in game/main.py...")
     mainpy = Path("game/main.py")
     mainpy_static = Path("public/game/main.py")

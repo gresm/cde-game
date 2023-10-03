@@ -1,4 +1,4 @@
-"""
+r"""
 This file utility converts HSTT (HiSTory Tree format) files to JSON files that can be used by the game.
 HSTT files are text files containing dialogue trees.
 Format of such file looks like this:
@@ -61,9 +61,8 @@ The text above converts into this json file:
     }
 
 """
-from enum import Enum
-
 import json
+from enum import Enum
 
 __version__ = (1, 0, 0)
 

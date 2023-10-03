@@ -1,5 +1,5 @@
-from pathlib import Path
 import json
+from pathlib import Path
 
 try:
     from .hstt_to_json import parse
@@ -23,7 +23,7 @@ def main():
     visible = {}
 
     for file in input_dir.iterdir():
-        if file.suffix not in {'.json', ".hstt"}:
+        if file.suffix not in {".json", ".hstt"}:
             continue
 
         is_hstt = file.suffix == ".hstt"
@@ -39,9 +39,9 @@ def main():
 
         if not is_hidden:
             visible[real_name] = parsed["title"]
-        
+
         stories[real_name] = parsed
-    
+
     out = {"index": visible, "stories": stories}
     out_text = json.dumps(out)
     out_file.touch()
