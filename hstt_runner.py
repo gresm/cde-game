@@ -1,7 +1,7 @@
 """
 Utility script to run HSTT formatted json files.
 """
-from typing import Optional, Union
+from typing import Optional
 
 
 class HSTTParserException(Exception):
@@ -122,6 +122,7 @@ class Story:
     def __init__(self, title: str, nodes: dict[str, StoryNode]):
         self.title = title
         self.nodes = nodes
+        self.entry_point = nodes[""]
 
     def __repr__(self):
         return f"{self.nodes}"
@@ -137,7 +138,13 @@ class Story:
         """
         Parses story from dictionary.
         """
-        ret = cls(data["title"], {name: StoryNode.parse(name, value) for name, value in data["nodes"].items()})
+        ret = cls(
+            data["title"],
+            {
+                name: StoryNode.parse(name, value)
+                for name, value in data["nodes"].items()
+            },
+        )
         ret.validate()
         return ret
 
@@ -170,20 +177,11 @@ class Story:
             raise HSTTParserException("There is no start node.")
 
 
-class HSTTRunnerCurrentNode:
-    def __init__(self, runner: "HSTTRunner", text: NodeText, options: NodeOptions):
-        self.runner = runner
-        self.text = text
-        self.options = options
-        self.selected = None
-
-    def select(self, option: str):
-        """
-        Selects option.
-        """
-        if option not in self.options.options:
-            raise HSTTParserException(f"Option {option} is not available.")
-        self.selected = option
+class Progress:
+    def __init__(self, requires_input: bool, to_show: str, is_alert: bool) -> None:
+        self.requires_input = requires_input
+        self.to_show = to_show
+        self.is_alert = is_alert
 
 
 class HSTTRunner:
@@ -193,12 +191,12 @@ class HSTTRunner:
 
     def __init__(self, story: Story):
         self.story = story
-        self.current_node = self.story.nodes[""]
-        self.selected_option: Union[str, None] = None
+        self.location = self.story.entry_point
+        self.progress = Progress(
+            bool(self.location.options) and not len(self.location.text.text),
+            self.story.title,
+            False,
+        )
 
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        if self.current_node.goto:
-            self.current_node = self.story.nodes[self.current_node.goto]
+    def step():
+        pass

@@ -137,7 +137,13 @@ class Story:
         """
         Parses story from dictionary.
         """
-        ret = cls(data["title"], {name: StoryNode.parse(name, value) for name, value in data["nodes"].items()})
+        ret = cls(
+            data["title"],
+            {
+                name: StoryNode.parse(name, value)
+                for name, value in data["nodes"].items()
+            },
+        )
         ret.validate()
         return ret
 

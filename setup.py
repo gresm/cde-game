@@ -4,14 +4,33 @@ import os
 import sys
 import time
 from argparse import ArgumentParser
+from dataclasses import dataclass
 from pathlib import Path
 from shutil import copyfile, copytree
 from subprocess import PIPE, STDOUT, Popen
 from typing import Callable
 
+if sys.version_info < (3, 11):
+    from typing_extensions import TypedDict
+else:
+    from typing import TypedDict
+
 import psutil
 
 from hstt_to_json import convert_file
+
+
+class ListenerInfo(TypedDict):
+    path: Path
+    path_to_copy: Path
+    callback: Callable | None
+
+
+@dataclass
+class ListenerFileData:
+    index: int
+    change_time: float
+
 
 game_dir = Path("game")
 game_dest = Path("public/game")
@@ -91,7 +110,7 @@ def restart_listener():
         sys.exit()
 
 
-files_to_listen: list[tuple[Callable | None, Path, Path]] = []
+files_to_listen: list[ListenerInfo] = []
 
 
 def register_listener(
@@ -108,7 +127,9 @@ def register_listener(
                 )
         return
 
-    files_to_listen.append((callback, path, new_path))
+    files_to_listen.append(
+        {"callback": callback, "path": path, "path_to_copy": new_path}
+    )
 
 
 register_listener(mainpy, mainpy_static)
@@ -120,8 +141,8 @@ register_listener(skulpt_modules, callback=compress_skulpt_modules)
 
 def listen(pid: int):
     print("Spawning a listener for changes in files.")
-    file_modified_times: dict[str, list[int, float]] = {
-        str(val[1]): [idx, val[1].stat().st_mtime]
+    file_modified_times: dict[str, ListenerFileData] = {
+        str(val["path"]): ListenerFileData(idx, val["path"].stat().st_mtime)
         for idx, val in enumerate(files_to_listen)
     }
 
@@ -133,20 +154,29 @@ def listen(pid: int):
                 break
 
             for name, val in file_modified_times.items():
-                if files_to_listen[val[0]][1].stat().st_mtime > val[1]:
-                    if files_to_listen[val[0]][1] == files_to_listen[val[0]][2]:
+                if files_to_listen[val.index]["path"].stat().st_mtime > val.change_time:
+                    if (
+                        files_to_listen[val.index]["path"]
+                        == files_to_listen[val.index]["path_to_copy"]
+                    ):
                         print(f"File {name} changed.")
                     else:
                         print(
-                            f"File {name} changed. Updating {str(files_to_listen[val[0]][2])}"
+                            f"File {name} changed. Updating {str(files_to_listen[val.index]['path_to_copy'])}"
                         )
 
-                        copyfile(files_to_listen[val[0]][1], files_to_listen[val[0]][2])
+                        copyfile(
+                            files_to_listen[val.index]["path"],
+                            files_to_listen[val.index]["path_to_copy"],
+                        )
 
-                    val[1] = files_to_listen[val[0]][1].stat().st_mtime
+                    val.change_time = (
+                        files_to_listen[val.index]["path_to_copy"].stat().st_mtime
+                    )
 
-                    if files_to_listen[val[0]][0] is not None:
-                        files_to_listen[val[0]][0]()
+                    callback = files_to_listen[val.index]["callback"]
+                    if callback is not None:
+                        callback()
         print("Parent process ended, exiting from listener...")
     except KeyboardInterrupt:
         print("Exiting from listener...")
