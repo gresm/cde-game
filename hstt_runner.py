@@ -1,7 +1,29 @@
 """
 Utility script to run HSTT formatted json files.
 """
-from typing import Optional
+from typing import Literal, Optional, TypeAlias
+
+from typing_extensions import NotRequired, TypedDict
+
+
+class RawTextLine(TypedDict):
+    text: str
+    type: Literal["text", "alert"]
+
+
+RawNodeText: TypeAlias = "list[RawTextLine]"
+RawNodeOptions: TypeAlias = "list[list[str]]"
+
+
+class RawStoryNode(TypedDict):
+    text: RawNodeText
+    options: NotRequired[RawNodeOptions]
+    goto: NotRequired[str]
+
+
+class RawStory(TypedDict):
+    title: str
+    nodes: dict[str, RawStoryNode]
 
 
 class HSTTParserException(Exception):
@@ -21,7 +43,7 @@ class TextLine:
         return f"{self.type}: {self.text}"
 
     @classmethod
-    def parse(cls, data: dict[str, str]):
+    def parse(cls, data: RawTextLine):
         """
         Parses text line from dictionary.
         """
@@ -40,7 +62,7 @@ class NodeText:
         return f'[{", ".join([str(line) for line in self.text])}]'
 
     @classmethod
-    def parse(cls, data: list[dict[str, str]]):
+    def parse(cls, data: list[RawTextLine]):
         """
         Parses text from list of dictionaries.
         """
@@ -82,11 +104,11 @@ class NodeOptions:
         return f'[{", ".join([str(option) for option in self.options])}]'
 
     @classmethod
-    def parse(cls, data: list[list[str, str]]):
+    def parse(cls, data: RawNodeOptions):
         """
         Parses options from list of dictionaries.
         """
-        return cls([OptionElement.parse(option) for option in data])
+        return cls([OptionElement.parse((option[0], option[1])) for option in data])
 
 
 class StoryNode:
@@ -106,14 +128,14 @@ class StoryNode:
         return f"{self.name}:\n{self.text}\n{self.options}"
 
     @classmethod
-    def parse(cls, name: str, data: dict[str, list[dict[str, str]], dict[str, str]]):
+    def parse(cls, name: str, data: RawStoryNode):
         """
         Parses story node from dictionary.
         """
         return cls(
             name,
             NodeText.parse(data["text"]),
-            NodeOptions.parse(data.get("options", {})),
+            NodeOptions.parse(data.get("options", [])),
             data.get("goto", None),
         )
 
@@ -133,7 +155,7 @@ class Story:
     @classmethod
     def parse(
         cls,
-        data: dict[str, dict[str, list[dict[str, str]], dict[str, str]]],
+        data: RawStory,
     ):
         """
         Parses story from dictionary.
@@ -198,5 +220,5 @@ class HSTTRunner:
             False,
         )
 
-    def step():
+    def step(self):
         pass

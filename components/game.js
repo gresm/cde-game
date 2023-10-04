@@ -221,15 +221,14 @@ class SkulptRunner extends Component {
         Sk.gameInterface.story = this.props.story;
     }
 
-    progressGame(feedback, text) {
-        this.setupInput(
-            Sk.ffi.remapToJs(
-                Sk.misceval.callsimArray(Sk.gameInterface.stepFunc, [
-                    Sk.builtin.int_(feedback),
-                    Sk.builtin.str(text),
-                ]),
-            ),
+    progressGame(feedback) {
+        /*this.setupInput(*/
+        globalThis.ret = Sk.ffi.remapToJs(
+            Sk.misceval.callsimArray(Sk.gameInterface.stepFunc, [
+                Sk.builtin.int_(feedback),
+            ]),
         );
+        /*);*/
     }
 
     setupInput(number) {
@@ -238,7 +237,7 @@ class SkulptRunner extends Component {
             return;
         }
         if (number == 1) {
-            this.progressGame(0, "");
+            this.progressGame(0);
             return;
         }
         this.context.setValue("awaitingInput", true);
@@ -247,7 +246,7 @@ class SkulptRunner extends Component {
     }
 
     onFinishedTyping(text) {
-        this.progressGame(reverseName(text), text);
+        this.progressGame(reverseName(text));
     }
 
     onAfterFullLoad() {
@@ -261,7 +260,7 @@ class SkulptRunner extends Component {
             );
             Sk.gameInterface.stepFunc = code.tp$getattr(Sk.builtin.str("step"));
             this.context.onFinishedTyping(this.onFinishedTyping.bind(this));
-            this.progressGame(-1, "");
+            this.progressGame(-1);
         } catch (err) {
             if (err.toString !== undefined) {
                 let codePeek = "";

@@ -5,3 +5,5 @@ class _getitem:
 
 Optional = _getitem()
 Union = _getitem()
+Literal = _getitem()
+TypeAlias = _getitem()

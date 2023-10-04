@@ -135,7 +135,7 @@ class HSTTToJSON:
         else:
             self.title = ""
         self.state = HSTTParserState()
-        self.nodes = {}
+        self.nodes: dict[str, str] = {}
 
     @staticmethod
     def get_line_type(line: str) -> LineType:

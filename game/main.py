@@ -4,6 +4,8 @@ from document import getElementById
 import hstt_runner
 
 game_div = getElementById(game.game_div())
+if game_div is None:
+    raise RuntimeError(f"No game div found with id '{game.game_div()}'.")
 
 
 class GameRunner:
@@ -14,13 +16,13 @@ class GameRunner:
 
 game_runner = GameRunner(game.get_story())
 game_div.innerText = game_runner.runner.story.title + "\n"
-state = -1
 
-getElementById("to-remove-on-load").remove()
+to_remove = getElementById("to-remove-on-load")
+if to_remove:
+    to_remove.remove()
 
 
-def step(selected, text):
-    global state
-
+def step(selected):
     selected = int(selected)
-    typed = str(text)
+    game_div.innerText += str(selected)
+    return 1
