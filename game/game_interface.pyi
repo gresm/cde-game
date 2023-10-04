@@ -1,5 +1,5 @@
 def get_story() -> dict:
     pass
 
-def gameDiv() -> str:
+def game_div() -> str:
     pass

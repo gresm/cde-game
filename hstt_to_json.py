@@ -38,10 +38,10 @@ The text above converts into this json file:
                 "text": [
                         {"type": "text", "text": "Text to be displayed,\nThat has multiline support."}
                 ],
-                "options": {
-                        "next_node": "Option 1",
-                        "other_next_node": "Option 2"
-                }
+                "options": [
+                        ["next_node", "Option 1"],
+                        ["other_next_node", "Option 2"]
+                ]
             },
             "next_node": {
                 "text": [
@@ -61,14 +61,14 @@ The text above converts into this json file:
                 ]
             },
         }
-        "title": "The title",
+        "title": "The title"
     }
 
 """
 import json
 from enum import Enum
 
-__version__ = (1, 1, 2)
+__version__ = (1, 1, 3)
 
 
 class HSTTParserException(Exception):
@@ -91,7 +91,7 @@ class HSTTParserState:
         self.searching_alert = False
         self.node_text = []
         self.node_goto = ""
-        self.node_options = {}
+        self.node_options = []
         self.alert_text = ""
 
     def add_text(self, text: str):
@@ -101,7 +101,7 @@ class HSTTParserState:
         self.node_text.append({"type": LineType.ALERT.value, "text": alert})
 
     def add_option(self, destination: str, description: str):
-        self.node_options[destination] = description
+        self.node_options.append([destination, description])
 
     def set_goto(self, goto: str):
         self.node_goto = goto
@@ -120,7 +120,7 @@ class HSTTParserState:
     def clear_current_node(self):
         self.node_text = []
         self.node_goto = ""
-        self.node_options = {}
+        self.node_options = []
         # This is a hack to make sure that if something goes wrong, we don't override entry node (with empty name).
         self.current_node_name = " "
 
@@ -202,8 +202,8 @@ def _load_file(file: str):
         return f.read()
 
 
-def _write_to_file(file: str, text: str, newline: bool = False):
-    with open(file, "w", encoding="utf-8", newline=newline) as f:
+def _write_to_file(file: str, text: str):
+    with open(file, "w", encoding="utf-8") as f:
         f.write(text)
         return text
 
@@ -225,9 +225,9 @@ def dumps_file(file: str):
     return dumps(_load_file(file))
 
 
-def dumps_to_file(text: str, output_file: str, newline: bool = False):
-    return _write_to_file(output_file, dumps(text), newline)
+def dumps_to_file(text: str, output_file: str):
+    return _write_to_file(output_file, dumps(text))
 
 
-def convert_file(input_file: str, output_file: str, newline: bool = False):
-    return _write_to_file(output_file, dumps_file(input_file), newline)
+def convert_file(input_file: str, output_file: str):
+    return _write_to_file(output_file, dumps_file(input_file))

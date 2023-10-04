@@ -15,10 +15,16 @@
                     "text": "That has multiline support."
                 }
             ],
-            "options": {
-                "next_node": "Option 1",
-                "other_next_node": "Option 2"
-            }
+            "options": [
+                [
+                    "next_node",
+                    "Option 1"
+                ],
+                [
+                    "other_next_node",
+                    "Option 2"
+                ]
+            ]
         },
         "next_node": {
             "text": [

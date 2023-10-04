@@ -8,7 +8,7 @@ var $builtinmodule = function (name) {
         return Sk.ffi.remapToPy(Sk.gameInterface.story);
     });
 
-    mod.gameDiv = new Sk.builtin.func(function () {
+    mod.game_div = new Sk.builtin.func(function () {
         if (Sk.divid !== undefined) {
             return new Sk.builtin.str(Sk.divid);
         } else {

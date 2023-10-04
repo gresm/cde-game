@@ -3,7 +3,7 @@ from document import getElementById
 
 import hstt_runner
 
-gameDiv = getElementById(game.gameDiv())
+game_div = getElementById(game.game_div())
 
 
 class GameRunner:
@@ -13,7 +13,7 @@ class GameRunner:
 
 
 game_runner = GameRunner(game.get_story())
-gameDiv.innerText = "Hello from python!"
+game_div.innerText = game_runner.runner.story.title + "\n"
 state = -1
 
 getElementById("to-remove-on-load").remove()

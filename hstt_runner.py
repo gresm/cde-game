@@ -82,11 +82,11 @@ class NodeOptions:
         return f'[{", ".join([str(option) for option in self.options])}]'
 
     @classmethod
-    def parse(cls, data: dict[str, str]):
+    def parse(cls, data: list[list[str, str]]):
         """
         Parses options from list of dictionaries.
         """
-        return cls([OptionElement.parse(option) for option in data.items()])
+        return cls([OptionElement.parse(option) for option in data])
 
 
 class StoryNode:

@@ -7,16 +7,17 @@ from argparse import ArgumentParser
 from pathlib import Path
 from shutil import copyfile, copytree
 from subprocess import PIPE, STDOUT, Popen
+from typing import Callable
 
 import psutil
 
-from stories.generate import main as _generate_stories
 from hstt_to_json import convert_file
 
 game_dir = Path("game")
 game_dest = Path("public/game")
 hstt_runner = Path("hstt_runner.py")
-hstt_dest = Path("skulpt-modules/hstt_runner.py")
+skulpt_modules = Path("skulpt-modules")
+hstt_dest = skulpt_modules / "hstt_runner.py"
 hstt_to_json = Path("hstt_to_json.py")
 hstt_json_dest = Path("stories/hstt_to_json.py")
 generated_lib = Path("generated/skulpt-extra.js")
@@ -27,10 +28,16 @@ setup_file = Path(__file__)
 test_hstt = Path("test.hstt")
 test_json = Path("test.hstt.json")
 
+
 def generate_stories():
+    if "hstt_to_json" in sys.modules:
+        del sys.modules["hstt_to_json"]
+
+    from stories.generate import main as _generate_stories
+
     print("Generating story trees...")
     _generate_stories()
-    convert_file(str(test_hstt), str(test_json), True)
+    convert_file(str(test_hstt), str(test_json))
 
 
 def main():
@@ -84,12 +91,31 @@ def restart_listener():
         sys.exit()
 
 
-files_to_listen: list[tuple[bool, Path, Path]] = [
-    (None, mainpy, mainpy_static),
-    (compress_skulpt_modules, hstt_runner, hstt_dest),
-    (generate_stories, hstt_to_json, hstt_json_dest),
-    (restart_listener, setup_file, setup_file),
-]
+files_to_listen: list[tuple[Callable | None, Path, Path]] = []
+
+
+def register_listener(
+    path: Path, new_path: Path | None = None, callback: Callable | None = None
+):
+    if new_path is None:
+        new_path = path
+
+    if path.is_dir():
+        for subpath in path.iterdir():
+            if subpath.is_file():
+                register_listener(
+                    subpath, new_path / subpath.relative_to(path), callback
+                )
+        return
+
+    files_to_listen.append((callback, path, new_path))
+
+
+register_listener(mainpy, mainpy_static)
+register_listener(hstt_runner, hstt_dest, compress_skulpt_modules)
+register_listener(hstt_to_json, hstt_json_dest, generate_stories)
+register_listener(setup_file, callback=restart_listener)
+register_listener(skulpt_modules, callback=compress_skulpt_modules)
 
 
 def listen(pid: int):
@@ -106,15 +132,15 @@ def listen(pid: int):
             if not psutil.pid_exists(pid):
                 break
 
-            # print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(mainpy.stat().st_mtime)))
-            # print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(mainpy_static.stat().st_mtime)))
             for name, val in file_modified_times.items():
                 if files_to_listen[val[0]][1].stat().st_mtime > val[1]:
-                    print(
-                        f"File {name} changed. Updating {str(files_to_listen[val[0]][2])}"
-                    )
+                    if files_to_listen[val[0]][1] == files_to_listen[val[0]][2]:
+                        print(f"File {name} changed.")
+                    else:
+                        print(
+                            f"File {name} changed. Updating {str(files_to_listen[val[0]][2])}"
+                        )
 
-                    if files_to_listen[val[0]][1] != files_to_listen[val[0]][2]:
                         copyfile(files_to_listen[val[0]][1], files_to_listen[val[0]][2])
 
                     val[1] = files_to_listen[val[0]][1].stat().st_mtime
