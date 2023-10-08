@@ -197,6 +197,14 @@ class SkulptRunner extends Component {
         }
     };
 
+    skulptPrint(text) {
+        console.log(text);
+    }
+
+    skulptError(text) {
+        console.error(text);
+    }
+
     skulptLoaded() {
         function builtinRead(x) {
             if (
@@ -217,8 +225,7 @@ class SkulptRunner extends Component {
         });
 
         Sk.divid = this.divid;
-        Sk.gameInterface = {};
-        Sk.gameInterface.story = this.props.story;
+        Sk.gameInterface = {story: this.props.story, out: this.skulptPrint.bind(this), err: this.skulptError.bind(this)};
     }
 
     progressGame(feedback) {

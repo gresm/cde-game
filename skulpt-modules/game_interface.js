@@ -13,7 +13,29 @@ var $builtinmodule = function (name) {
             return new Sk.builtin.str(Sk.divid);
         } else {
             throw new Sk.builtin.AttributeError(
-                "There is no value set for divid",
+                "There is no value set for 'divid'.",
+            );
+        }
+    });
+
+    mod.out = new Sk.builtin.func(function out(text) {
+        Sk.builtin.pyCheckArgsLen("out", arguments.length, 1, 1);
+        if (Sk.gameInterface.out !== undefined) {
+            Sk.gameInterface.out(Sk.ffi.remapToJs(text));
+        } else {
+            throw new Sk.builtin.AttributeError(
+                "There is no 'out' callback defined by javascript.",
+            );
+        }
+    });
+
+    mod.err = new Sk.builtin.func(function err(text) {
+        Sk.builtin.pyCheckArgsLen("err", arguments.length, 1, 1);
+        if (Sk.gameInterface.err !== undefined) {
+            Sk.gameInterface.err(sk.ffi.remaptoJs(text));
+        } else {
+            throw new Sk.builtin.AttributeError(
+                "There is no 'err' callback defined by javascript.",
             );
         }
     });

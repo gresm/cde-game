@@ -3,3 +3,11 @@ def get_story() -> dict:
 
 def game_div() -> str:
     pass
+
+
+def out(text):
+    pass
+
+
+def err(text):
+    pass
