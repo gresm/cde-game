@@ -4,6 +4,8 @@ class _getitem:
 
 
 NotRequired = _getitem()
+TypeAlias = _getitem()
+TypeGuard = _getitem()
 
 
 class TypedDict(dict):
