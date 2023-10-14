@@ -225,7 +225,12 @@ class SkulptRunner extends Component {
         });
 
         Sk.divid = this.divid;
-        Sk.gameInterface = {story: this.props.story, out: this.skulptPrint.bind(this), err: this.skulptError.bind(this)};
+        Sk.gameInterface = {
+            story: this.props.story,
+            out: this.skulptPrint.bind(this),
+            err: this.skulptError.bind(this),
+            read: builtinRead
+        };
     }
 
     progressGame(feedback) {
@@ -277,7 +282,7 @@ class SkulptRunner extends Component {
                         codePeek += String(
                             value.filename === "__main__.py"
                                 ? this.code
-                                : skulptModules[value.filename],
+                                : Sk.gameInterface.read(value.filename),
                         )
                             .split("\n", Number(value.lineno))
                             .pop();
@@ -285,6 +290,9 @@ class SkulptRunner extends Component {
                 }
                 console.error(err.toString() + codePeek);
                 globalThis["skulptError"] = err;
+                if (Sk?.gameInterface?.err !== undefined) {
+                    Sk.gameInterface.err(err.toString() + codePeek)
+                }
             }
             throw err;
         }
