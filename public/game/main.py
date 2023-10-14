@@ -24,5 +24,10 @@ if to_remove:
 
 def step(selected):
     selected = int(selected)
-    game_div.innerText += str(selected)
+    game.out(str(selected))
     return 1
+
+
+def reset():
+    global game_runner
+    game_runner = GameRunner(game.get_story())

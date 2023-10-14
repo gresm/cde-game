@@ -173,6 +173,7 @@ class SkulptRunner extends Component {
         this.code = "";
         this.wasMounted = false;
         this.divid = "game-text";
+        this.output = "";
 
         /**
          * @type {TypingContextData}
@@ -198,7 +199,13 @@ class SkulptRunner extends Component {
     };
 
     skulptPrint(text) {
+        this.output = this.output.concat(text);
         console.log(text);
+    }
+
+    displayTextWorker() {
+        document.getElementById(this.divid).innerText += this.output.charAt(0);
+        this.output = this.output.slice(1);
     }
 
     skulptError(text) {
@@ -229,7 +236,7 @@ class SkulptRunner extends Component {
             story: this.props.story,
             out: this.skulptPrint.bind(this),
             err: this.skulptError.bind(this),
-            read: builtinRead
+            read: builtinRead,
         };
     }
 
@@ -291,7 +298,7 @@ class SkulptRunner extends Component {
                 console.error(err.toString() + codePeek);
                 globalThis["skulptError"] = err;
                 if (Sk?.gameInterface?.err !== undefined) {
-                    Sk.gameInterface.err(err.toString() + codePeek)
+                    Sk.gameInterface.err(err.toString() + codePeek);
                 }
             }
             throw err;

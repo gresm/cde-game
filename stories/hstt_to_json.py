@@ -106,8 +106,8 @@ class HSTTParserState:
     def set_goto(self, goto: str):
         self.node_goto = goto
 
-    def get_node(self):
-        ret = dict()
+    def get_node(self) -> dict[str, dict]:
+        ret: dict = {}
 
         ret["text"] = self.node_text
         if self.node_goto:
@@ -135,7 +135,7 @@ class HSTTToJSON:
         else:
             self.title = ""
         self.state = HSTTParserState()
-        self.nodes: dict[str, str] = {}
+        self.nodes: dict[str, dict] = {}
 
     @staticmethod
     def get_line_type(line: str) -> LineType:
