@@ -63,7 +63,7 @@ export function isScriptLoading(src) {
 }
 
 export function doesScriptExist(src) {
-    return loadedScripts.hasOwnProperty(src);
+    return Object.prototype.hasOwnProperty.bind(loadedScripts)(src);
 }
 
 function allScriptNodesFrom(src) {

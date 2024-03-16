@@ -1,4 +1,6 @@
-var $builtinmodule = function (name) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+var $builtinmodule = function () {
+    let Sk = globalThis.Sk;
     var mod = {};
 
     mod.__name__ = new Sk.builtin.str("game_interface");
@@ -32,7 +34,7 @@ var $builtinmodule = function (name) {
     mod.err = new Sk.builtin.func(function err(text) {
         Sk.builtin.pyCheckArgsLen("err", arguments.length, 1, 1);
         if (Sk.gameInterface.err !== undefined) {
-            Sk.gameInterface.err(sk.ffi.remaptoJs(text));
+            Sk.gameInterface.err(Sk.ffi.remaptoJs(text));
         } else {
             throw new Sk.builtin.AttributeError(
                 "There is no 'err' callback defined by javascript.",

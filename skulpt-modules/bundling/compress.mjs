@@ -1,8 +1,8 @@
-var { readFile, readdir } = require("fs/promises");
-var minify = require("@node-minify/core");
-var uglifyJS = require("@node-minify/uglify-js");
+import { readFile, readdir } from "fs/promises";
+import minify from "@node-minify/core";
+import uglifyJS from "@node-minify/uglify-js";
 
-const path = require("path");
+import { join } from "path";
 
 /**
  *
@@ -28,13 +28,13 @@ async function uglifyCode(code) {
 async function bundleDirectory(dir) {
     var dirs = await readdir(dir);
     var ret = {};
-    for (idx in dirs) {
+    for (const idx in dirs) {
         var file = dirs[idx];
         if (!(file.endsWith(".js") || file.endsWith(".py"))) {
             continue;
         }
 
-        var code = (await readFile(path.join(dir, file))).toString();
+        var code = (await readFile(join(dir, file))).toString();
         if (code === "") {
             ret["./" + file] = code;
             continue;

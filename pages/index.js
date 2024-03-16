@@ -1,6 +1,4 @@
 import Head from "next/head";
-import Image from "next/image";
-import Link from "next/link";
 import { React, Component, createContext } from "react";
 import {
     ConsoleLine,
@@ -8,6 +6,7 @@ import {
     Container,
     InteractveSelection,
 } from "../components/console";
+import PropTypes from "prop-types";
 
 const gameEndpoint = "/play/";
 const apiEndpoint = "/api/";
@@ -16,7 +15,7 @@ const apiListStories = apiEndpoint + "list-stories";
 var storyListContext = createContext({
     vals: {},
     names: [],
-    updateNames: (val) => {},
+    updateNames: () => {},
 });
 
 export class SlContextProvider extends Component {
@@ -46,11 +45,11 @@ export class SlContextProvider extends Component {
     }
 }
 
+SlContextProvider.propTypes = { children: PropTypes.any };
+
 class StoryEntry extends Component {
     constructor({ name, gameID, ...props }) {
-        props.name = name;
-        props.gameID = gameID;
-        super();
+        super(props);
         this.state = {
             name: name,
             gameID: gameID,
@@ -67,6 +66,8 @@ class StoryEntry extends Component {
         );
     }
 }
+
+StoryEntry.propTypes = { name: PropTypes.string, gameID: PropTypes.string };
 
 class StoriesList extends Component {
     static contextType = storyListContext;
@@ -119,14 +120,14 @@ class StoriesList extends Component {
                         .then((value) => {
                             this.setNames(value);
                         })
-                        .catch((_) => {
+                        .catch(() => {
                             this.fetchFailed();
                         });
                 } else {
                     this.fetchFailed();
                 }
             })
-            .catch((_) => {
+            .catch(() => {
                 this.fetchFailed();
             });
     }
@@ -201,10 +202,7 @@ class Home extends Component {
          */
         this.listeners = [];
 
-        var that = this;
-        this.bindedKeydownListener = (ev) => {
-            that.handleKeyDown(ev);
-        };
+        this.bindedKeydownListener = this.handleKeyDown.bind(this);
     }
 
     /**

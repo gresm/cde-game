@@ -81,7 +81,7 @@ def compress_skulpt_modules():
     print("Compressing additional skulpt libraries.")
 
     process = Popen(
-        ["node", "skulpt-modules/bundling/compress.js"],
+        ["node", "skulpt-modules/bundling/compress.mjs"],
         stdin=PIPE,
         stdout=PIPE,
         stderr=STDOUT,
@@ -148,10 +148,7 @@ def listen(pid: int):
 
     try:
         while psutil.pid_exists(pid):
-            time.sleep(5)
-
-            if not psutil.pid_exists(pid):
-                break
+            time.sleep(1)
 
             for name, val in file_modified_times.items():
                 if files_to_listen[val.index]["path"].stat().st_mtime > val.change_time:
@@ -183,11 +180,46 @@ def listen(pid: int):
         sys.exit(0)
 
 
+def dev():
+    dev_server = Popen(["npm", "run", "dev-dev"])
+    time.sleep(0.1)
+    print(dev_server.poll(), dev_server.pid)
+    # try:
+    setup_script = Popen(["python3", "setup.py", "-l", str(dev_server.pid)])
+    time.sleep(0.1)
+    print(setup_script.poll(), setup_script.pid)
+    # except ZeroDivisionError as err: # (OSError, SubprocessError) as err:
+    #     dev_server.kill()
+    #     raise err from None
+
+    try:
+        while True:
+            if dev_server.poll() is not None:
+                setup_script.kill()
+                print("a")
+                break
+            if setup_script.poll() is not None:
+                print(setup_script.poll(), setup_script.pid)
+                dev_server.kill()
+                print("b")
+                break
+            time.sleep(0.1)
+    except KeyboardInterrupt:
+        print("Terminating.")
+        dev_server.kill()
+        setup_script.kill()
+        sys.exit(0)
+
+
 parser = ArgumentParser()
 parser.add_argument("-l", dest="listen", type=int, required=False, default=0)
+parser.add_argument("--dev", dest="dev", action="store_true")
 args = parser.parse_args()
-
-if args.listen == 0:
+if args.dev:
+    if args.listen != 0:
+        print("WARNING: setup.py was ran with both --dev and -l=PID, which is unsupported, ignoring -l=PID.")
+    dev()
+elif args.listen == 0:
     main()
 else:
     listen(args.listen)

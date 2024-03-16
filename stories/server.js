@@ -1,6 +1,6 @@
 import data from "../generated/stories-json";
 
-export class StoriesMenager {
+export class StoriesManager {
     data;
     indexes;
     stories;
@@ -31,7 +31,7 @@ let defaultMenager;
 
 export function getLoader() {
     if (typeof defaultMenager === "undefined") {
-        defaultMenager = new StoriesMenager(data);
+        defaultMenager = new StoriesManager(data);
     }
     return defaultMenager;
 }

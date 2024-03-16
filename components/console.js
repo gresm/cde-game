@@ -1,4 +1,5 @@
-import { Component } from "react";
+import React, { Component } from "react";
+import PropTypes from "prop-types";
 
 export function ConsoleLine({
     text,
@@ -39,6 +40,14 @@ export function ConsoleLine({
     }
 }
 
+ConsoleLine.propTypes = {
+    text: PropTypes.any,
+    isInput: PropTypes.bool,
+    children: PropTypes.any,
+    color: PropTypes.string,
+    style: PropTypes.object,
+};
+
 export function InlineDiv({ children = undefined, ...extra }) {
     return (
         <div className="inline-div" {...extra}>
@@ -46,6 +55,8 @@ export function InlineDiv({ children = undefined, ...extra }) {
         </div>
     );
 }
+
+InlineDiv.propTypes = { children: PropTypes.any };
 
 export function Cursor() {
     return <div className="cursor"></div>;
@@ -60,6 +71,8 @@ export function Container({ children, ...props }) {
         </div>
     );
 }
+
+Container.propTypes = { children: PropTypes.any };
 
 export class InteractveSelection extends Component {
     constructor(props) {
@@ -118,7 +131,7 @@ export class InteractveSelection extends Component {
         return <>{this.state.text}</>;
     }
 
-    onKeyPressed(ev) {}
+    onKeyPressed() {}
 
     onSubmit() {}
 }

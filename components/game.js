@@ -1,6 +1,8 @@
 "use strict";
 
-import { Component, createContext } from "react";
+import React, { Component, createContext } from "react";
+import PropTypes from "prop-types";
+
 import {
     ConsoleLine,
     Cursor,
@@ -18,6 +20,11 @@ function generateNames(num) {
     }
     return ret;
 }
+
+/**
+ * @type {object}
+ */
+let Sk = undefined;
 
 /**
  *
@@ -48,10 +55,10 @@ function validateUserInput(text, range) {
 
 var typingContext = createContext({
     resetState: () => {},
-    getValue: (key) => {},
-    setValue: (key, value) => {},
-    onFinishedTyping: (func) => {},
-    triggerFinishedTyping: (text) => {},
+    getValue: () => {},
+    setValue: () => {},
+    onFinishedTyping: () => {},
+    triggerFinishedTyping: () => {},
 });
 
 class TypingContextProvider extends Component {
@@ -117,6 +124,8 @@ class TypingContextProvider extends Component {
     }
 }
 
+TypingContextProvider.propTypes = { children: PropTypes.any };
+
 class GameInteractveSelection extends InteractveSelection {
     static contextType = typingContext;
 
@@ -178,7 +187,7 @@ class SkulptRunner extends Component {
         /**
          * @type {TypingContextData}
          */
-        this.context = this.context;
+        this.context;
     }
 
     skulptMainLoaded = () => {
@@ -213,6 +222,7 @@ class SkulptRunner extends Component {
     }
 
     skulptLoaded() {
+        Sk = globalThis.Sk;
         function builtinRead(x) {
             if (
                 Sk.builtinFiles !== undefined &&
@@ -250,18 +260,19 @@ class SkulptRunner extends Component {
         /*);*/
     }
 
-    setupInput(number) {
+    setupInput(names) {
         // TODO: fill it.
-        if (number < 1) {
+        if (names.length < 1) {
+            this.context.setValue("awaitingInput", false);
             return;
         }
-        if (number == 1) {
+        if (names.length == 1) {
             this.progressGame(0);
             return;
         }
         this.context.setValue("awaitingInput", true);
-        this.context.setValue("names", generateNames(number));
-        this.context.setValue("inputRange", number);
+        this.context.setValue("names", generateNames(names));
+        this.context.setValue("inputRange", names);
     }
 
     onFinishedTyping(text) {
@@ -351,20 +362,17 @@ class SkulptRunner extends Component {
     }
 }
 
-export class Game extends Component {
-    render() {
-        return (
-            <Container id="game-wrappper">
-                <ConsoleLine isInput={true}>
-                    ./run {this.props.name}
-                </ConsoleLine>
-                <TypingContextProvider>
-                    <SkulptRunner
-                        story={this.props.story}
-                        name={this.props.name}
-                    />
-                </TypingContextProvider>
-            </Container>
-        );
-    }
+SkulptRunner.propTypes = { name: PropTypes.string, story: PropTypes.any };
+
+export function Game({ name, story }) {
+    return (
+        <Container id="game-wrappper">
+            <ConsoleLine isInput={true}>./run {name}</ConsoleLine>
+            <TypingContextProvider>
+                <SkulptRunner story={story} name={name} />
+            </TypingContextProvider>
+        </Container>
+    );
 }
+
+Game.propTypes = { name: PropTypes.string, story: PropTypes.any };

@@ -1,6 +1,7 @@
 import { getLoader } from "../../stories/server";
 import { Game } from "../../components/game";
-import { Component } from "react";
+// import React, { Component } from "react";
+// import PropTypes from "prop-types";
 
 /**
  * @typedef { import("next").NextApiRequest } NextApiRequest
@@ -8,18 +9,22 @@ import { Component } from "react";
  * @typedef { import("next").GetServerSidePropsContext } GetServerSidePropsContext
  */
 
-export default class PlayGame extends Component {
-    constructor(props) {
-        super(props);
-        var { story, name } = props;
-        this.story = story;
-        this.name = name;
-    }
+// export default class PlayGame extends Component {
+//     constructor(props) {
+//         super(props);
+//         var { story, name } = props;
+//         this.story = story;
+//         this.name = name;
+//     }
 
-    render() {
-        return <Game story={this.story} name={this.name} />;
-    }
-}
+//     render() {
+//         return <Game story={this.story} name={this.name} />;
+//     }
+// }
+
+// PlayGame.propTypes = { name: PropTypes.string, story: PropTypes.oneOf([PropTypes.object, PropTypes.null]) };
+
+export default Game;
 
 /**
  *
