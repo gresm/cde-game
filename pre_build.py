@@ -50,7 +50,8 @@ def setup_venv():
                 "-r",
                 REQUIREMENTS_PATH,
             ],
-            stderr=sys.stderr,
+            stderr=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL
         )
 
 

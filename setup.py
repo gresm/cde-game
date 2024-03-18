@@ -187,7 +187,6 @@ def dev():
     # try:
     setup_script = Popen(["python3", "setup.py", "-l", str(dev_server.pid)])
     time.sleep(0.1)
-    print(setup_script.poll(), setup_script.pid)
     # except ZeroDivisionError as err: # (OSError, SubprocessError) as err:
     #     dev_server.kill()
     #     raise err from None
@@ -196,12 +195,9 @@ def dev():
         while True:
             if dev_server.poll() is not None:
                 setup_script.kill()
-                print("a")
                 break
             if setup_script.poll() is not None:
-                print(setup_script.poll(), setup_script.pid)
                 dev_server.kill()
-                print("b")
                 break
             time.sleep(0.1)
     except KeyboardInterrupt:
