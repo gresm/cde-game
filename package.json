@@ -3,12 +3,12 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "npm run pre-build && python3 setup.py --dev",
+        "dev": "npm run pre-build && $(python3 pre_build.py) setup.py --dev",
         "dev-dev": "next dev",
         "build": "npm run pre-build && next build",
         "start": "next start",
         "lint": "npm run pre-build && next lint",
-        "pre-build": "python3 setup.py"
+        "pre-build": "$(python3 pre_build.py) setup.py"
     },
     "dependencies": {
         "@node-minify/core": "^7.0.0",
