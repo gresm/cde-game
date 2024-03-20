@@ -80,7 +80,7 @@ export class InteractveSelection extends Component {
 
         this.state = {
             text: "",
-            currentlySelecting: -1,
+            currentlySelecting: 0,
         };
 
         this.mounted = false;
@@ -103,16 +103,14 @@ export class InteractveSelection extends Component {
      */
 
     moveSelection(by) {
-        if (typeof this.context === "undefined") {
+        if (this.context === undefined || this.context.names.length === 0) {
             return;
         }
 
-        var newIdx = this.state.currentlySelecting;
+        var newIdx = (this.state.currentlySelecting + by) % this.context.names.length;
 
-        if (newIdx === -1) {
-            newIdx = 0;
-        } else {
-            newIdx = (newIdx + by) % this.context.names.length;
+        if (newIdx <= -1) {
+            newIdx = this.context.names.length - 1;
         }
 
         this.updateState("currentlySelecting", newIdx);

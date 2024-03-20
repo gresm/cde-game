@@ -47,6 +47,9 @@ setup_file = Path(__file__)
 test_hstt = Path("test.hstt")
 test_json = Path("test.hstt.json")
 
+gamepy = Path("game/game.py")
+gamepy_dest = Path("skulpt-modules/game.py")
+
 
 def generate_stories():
     if "hstt_to_json" in sys.modules:
@@ -137,6 +140,7 @@ register_listener(hstt_runner, hstt_dest, compress_skulpt_modules)
 register_listener(hstt_to_json, hstt_json_dest, generate_stories)
 register_listener(setup_file, callback=restart_listener)
 register_listener(skulpt_modules, callback=compress_skulpt_modules)
+register_listener(gamepy, gamepy_dest)
 
 
 def listen(pid: int):
@@ -183,7 +187,6 @@ def listen(pid: int):
 def dev():
     dev_server = Popen(["npm", "run", "dev-dev"])
     time.sleep(0.1)
-    print(dev_server.poll(), dev_server.pid)
     # try:
     setup_script = Popen(["python3", "setup.py", "-l", str(dev_server.pid)])
     time.sleep(0.1)

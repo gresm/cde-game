@@ -27,18 +27,10 @@ assert isinstance(_context, SimpleNamespace)
 VENV_CONTEXT = _context
 
 
-def run_script(path):
-    print(path)
-    with open(path, "rb") as file:
-        exec(compile(file.read(), path, "exec"), {"__file__": path})
-
-
 def setup_venv():
     builder = MyEnvBuilder(symlinks=True, with_pip=True)
     builder.create(VENV_PATH)
 
-    # Only for virtualenv.
-    # run_script(os.path.join(context.bin_path, "activate_this.py"))
     if CREATE_VENV:
         subprocess.call(
             [
@@ -68,8 +60,6 @@ def activate_venv():
     )
     os.environ["VIRTUAL_ENV"] = VENV_CONTEXT.env_dir
     sys.prefix = VENV_CONTEXT.env_dir
-
-    # site.addsitepackages
 
 
 if __name__ == "__main__":

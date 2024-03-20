@@ -1,14 +1,13 @@
-def get_story() -> dict:
+def get_story():
+    pass
+
+def set_hook(name, func):
     pass
 
 
-def game_div() -> str:
+def set_value(name, value, use_state: bool = False):
     pass
 
 
-def out(text):
-    pass
-
-
-def err(text):
+def get_value(name, use_state: bool = False) -> object:
     pass

@@ -132,7 +132,7 @@ class GameInteractveSelection extends InteractveSelection {
     onKeyPressed(ev) {
         if (!this.context.awaitingInput) {
             console.log("not wanted");
-            return;
+            // return;
         }
         if (ev.key.length === 1) {
             this.updateState("text", this.state.text + ev.key);
@@ -172,6 +172,8 @@ class SkulptRunner extends Component {
     skulptSdt = "../skulpt-stdlib.js";
 
     static contextType = typingContext;
+
+    state = {"showLoadPrompt": true};
 
     constructor(props) {
         super(props);
@@ -247,16 +249,13 @@ class SkulptRunner extends Component {
             out: this.skulptPrint.bind(this),
             err: this.skulptError.bind(this),
             read: builtinRead,
+            runner: this,
         };
     }
 
-    progressGame(feedback) {
+    progressGame() {
         /*this.setupInput(*/
-        globalThis.ret = Sk.ffi.remapToJs(
-            Sk.misceval.callsimArray(Sk.gameInterface.stepFunc, [
-                Sk.builtin.int_(feedback),
-            ]),
-        );
+        Sk.gameInterface.hook("step");
         /*);*/
     }
 
@@ -267,7 +266,7 @@ class SkulptRunner extends Component {
             return;
         }
         if (names.length == 1) {
-            this.progressGame(0);
+            this.progressGame();
             return;
         }
         this.context.setValue("awaitingInput", true);
@@ -276,7 +275,7 @@ class SkulptRunner extends Component {
     }
 
     onFinishedTyping(text) {
-        this.progressGame(reverseName(text));
+        // this.progressGame(reverseName(text));
     }
 
     onAfterFullLoad() {
@@ -290,7 +289,7 @@ class SkulptRunner extends Component {
             );
             Sk.gameInterface.stepFunc = code.tp$getattr(Sk.builtin.str("step"));
             this.context.onFinishedTyping(this.onFinishedTyping.bind(this));
-            this.progressGame(-1);
+            this.progressGame();
         } catch (err) {
             if (err.toString !== undefined) {
                 let codePeek = "";
@@ -347,11 +346,15 @@ class SkulptRunner extends Component {
     render() {
         return (
             <>
-                <ConsoleLine id="to-remove-on-load">
-                    {this.isValid
-                        ? "Loading..."
-                        : `Story: ${this.props.name} not found.`}
-                </ConsoleLine>
+                {this.state.showLoadPrompt ? (
+                    <ConsoleLine id="to-remove-on-load">
+                        {this.isValid
+                            ? "Loading..."
+                            : `Story: ${this.props.name} not found.`}
+                    </ConsoleLine>
+                ) : (
+                    <></>
+                )}
                 <InlineDiv>
                     <div id={this.divid} />
                     <GameInteractveSelection />
