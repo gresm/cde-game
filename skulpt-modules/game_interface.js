@@ -19,6 +19,11 @@ var $builtinmodule = function () {
         return Sk.ffi.remapToPy(Sk.gameInterface.story);
     });
 
+    mod.get_runner = new Sk.builtin.func(function get_runner() {
+        Sk.abstr.checkArgsLen("get_runner", arguments.length, 0, 0);
+        return Sk.ffi.proxy(Sk.gameInterface.runner);
+    });
+
     /*mod.game_div = new Sk.builtin.func(function () {
         if (Sk.divid !== undefined) {
             return new Sk.builtin.str(Sk.divid);

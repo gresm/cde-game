@@ -11,3 +11,7 @@ def set_value(name, value, use_state: bool = False):
 
 def get_value(name, use_state: bool = False) -> object:
     pass
+
+
+def get_runner() -> object:
+    pass

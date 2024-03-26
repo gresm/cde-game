@@ -28,28 +28,23 @@ let Sk = undefined;
 
 /**
  *
- * @param {String} char
+ * @param {String} text
+ * @param {String[]} names
  * @returns {Number}
  */
-function reverseName(char) {
-    return char.charCodeAt(0) - 97;
-}
-
-/**
- *
- * @param {String} text
- * @param {Number} range
- * @returns {Boolean}
- */
-function validateUserInput(text, range) {
-    if (text.length != 1) {
-        return false;
+function validateUserInput(text, names) {
+    if (isNaN(parseInt(text))) {
+        return names.indexOf(text);
     }
-    return 0 <= reverseName(text) < range;
+    let parsed = parseInt(text);
+    if (1 <= parsed <= names.length) {
+        return parsed;
+    }
+    return -1;
 }
 
 /**
- * @typedef { {getValue: (key: string) => Object, setValue: (key: string, value: Object) => void, resetState: () => void, onFinishedTyping: (func: (text: string) => void) => void, triggerFinishedTyping: (text: string) => void} } TypingContextData
+ * @typedef { {getValue: (key: string) => Object, setValue: (key: string, value: Object) => void, resetState: () => void, onFinishedTyping: (func: (text: string) => void) => void, triggerFinishedTyping: (text: string) => void, names: string[]} } TypingContextData
  * @type {import("react").Context<TypingContextData>}
  */
 
@@ -59,6 +54,7 @@ var typingContext = createContext({
     setValue: () => {},
     onFinishedTyping: () => {},
     triggerFinishedTyping: () => {},
+    names: [],
 });
 
 class TypingContextProvider extends Component {
@@ -131,8 +127,7 @@ class GameInteractveSelection extends InteractveSelection {
 
     onKeyPressed(ev) {
         if (!this.context.awaitingInput) {
-            console.log("not wanted");
-            // return;
+            return;
         }
         if (ev.key.length === 1) {
             this.updateState("text", this.state.text + ev.key);
@@ -152,11 +147,12 @@ class GameInteractveSelection extends InteractveSelection {
 
     onSubmit() {
         var text = this.state.text;
-        if (!validateUserInput(text, this.context.inputRange)) {
+        var userInput = validateUserInput(text, this.context.names);
+        if (userInput === -1) {
             return;
         }
         this.updateState("text", "");
-        this.context.triggerFinishedTyping(text);
+        this.context.triggerFinishedTyping(userInput);
     }
 
     componentDidMount() {
@@ -173,8 +169,6 @@ class SkulptRunner extends Component {
 
     static contextType = typingContext;
 
-    state = {"showLoadPrompt": true};
-
     constructor(props) {
         super(props);
 
@@ -185,6 +179,11 @@ class SkulptRunner extends Component {
         this.wasMounted = false;
         this.divid = "game-text";
         this.output = "";
+        this.state = {
+            showLoadPrompt: true,
+            userInput: -1,
+            toPrint: [],
+        };
 
         /**
          * @type {TypingContextData}
@@ -271,16 +270,39 @@ class SkulptRunner extends Component {
         }
         this.context.setValue("awaitingInput", true);
         this.context.setValue("names", generateNames(names));
-        this.context.setValue("inputRange", names);
     }
 
-    onFinishedTyping(text) {
-        // this.progressGame(reverseName(text));
+    onFinishedTyping(userInput) {
+        this.setState({ ...this.state, userInput: userInput });
+    }
+
+    *iterLines() {
+        if (this.state["toPrint"].length - 1 == 0) return;
+
+        for (let i = 0; i < this.state["toPrint"].length - 1; i++)
+            yield (
+                <>
+                    {this.state["toPrint"][i]}
+                    <br />
+                </>
+            );
+
+        yield (
+            <InlineDiv key="lastLine">
+                {this.state["toPrint"][this.state["toPrint"].length - 1]}
+                <GameInteractveSelection />
+                <Cursor />
+            </InlineDiv>
+        );
+    }
+
+    appendLine(text) {
+        this.state["toPrint"].push(text);
+        this.forceUpdate();
     }
 
     onAfterFullLoad() {
         try {
-            console.log(this.props.story);
             var code = Sk.importMainWithBody(
                 "__main__",
                 false,
@@ -353,13 +375,8 @@ class SkulptRunner extends Component {
                             : `Story: ${this.props.name} not found.`}
                     </ConsoleLine>
                 ) : (
-                    <></>
+                    [...this.iterLines()]
                 )}
-                <InlineDiv>
-                    <div id={this.divid} />
-                    <GameInteractveSelection />
-                    <Cursor />
-                </InlineDiv>
             </>
         );
     }

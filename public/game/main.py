@@ -6,7 +6,7 @@ game.setup()
 
 @game.step_hook
 def step():
-    print("Hello!")
+    pass
 
 game.gi.set_hook("step", step)
 
