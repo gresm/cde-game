@@ -6,3 +6,7 @@ class _getitem:
 Optional = _getitem()
 Union = _getitem()
 Literal = _getitem()
+
+
+def cast(_typ, val):
+    return val

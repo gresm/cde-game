@@ -47,8 +47,8 @@ setup_file = Path(__file__)
 test_hstt = Path("test.hstt")
 test_json = Path("test.hstt.json")
 
-gamepy = Path("game/game.py")
-gamepy_dest = Path("skulpt-modules/game.py")
+gamepy = Path("game/gamejs.py")
+gamepy_dest = Path("skulpt-modules/gamejs.py")
 
 
 def generate_stories():

@@ -1,14 +1,15 @@
-import game
+import gamejs
 
 # game_div.innerText = game_runner.runner.story.title + "\n"
-game.setup()
+gamejs.setup()
 
 
-@game.step_hook
+@gamejs.step_hook
 def step():
-    pass
+    gamejs.print_line("Hello World!")
 
-game.gi.set_hook("step", step)
+
+gamejs.gi.set_hook("step", step)
 
 
 def reset():

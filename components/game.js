@@ -281,10 +281,9 @@ class SkulptRunner extends Component {
 
         for (let i = 0; i < this.state["toPrint"].length - 1; i++)
             yield (
-                <>
-                    {this.state["toPrint"][i]}
+                <a key={i}>{this.state["toPrint"][i]}
                     <br />
-                </>
+                </a>
             );
 
         yield (
