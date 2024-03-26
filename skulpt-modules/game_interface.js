@@ -24,6 +24,11 @@ var $builtinmodule = function () {
         return Sk.ffi.proxy(Sk.gameInterface.runner);
     });
 
+    mod._debug = new Sk.builtin.func(function _debug(value) {
+        Sk.abstr.checkArgsLen("_debug", arguments.length, 1, 1);
+        console.log(value);
+    });
+
     /*mod.game_div = new Sk.builtin.func(function () {
         if (Sk.divid !== undefined) {
             return new Sk.builtin.str(Sk.divid);

@@ -143,41 +143,39 @@ register_listener(skulpt_modules, callback=compress_skulpt_modules)
 register_listener(gamepy, gamepy_dest)
 
 
+def call_listener(listener: ListenerInfo):
+    if listener["path"] == listener["path_to_copy"]:
+        print(f"File {listener['path']} changed.")
+    else:
+        print(f"File {listener['path']} changed. Updating {listener['path_to_copy']}")
+
+        copyfile(
+            listener["path"],
+            listener["path_to_copy"],
+        )
+
+    if listener["callback"]:
+        listener["callback"]()
+
+
 def listen(pid: int):
     print("Spawning a listener for changes in files.")
-    file_modified_times: dict[str, ListenerFileData] = {
-        str(val["path"]): ListenerFileData(idx, val["path"].stat().st_mtime)
+    file_modified_times: list[ListenerFileData] = [
+        ListenerFileData(idx, val["path"].stat().st_mtime)
         for idx, val in enumerate(files_to_listen)
-    }
+    ]
 
     try:
         while psutil.pid_exists(pid):
             time.sleep(1)
 
-            for name, val in file_modified_times.items():
+            for val in file_modified_times:
                 if files_to_listen[val.index]["path"].stat().st_mtime > val.change_time:
-                    if (
-                        files_to_listen[val.index]["path"]
-                        == files_to_listen[val.index]["path_to_copy"]
-                    ):
-                        print(f"File {name} changed.")
-                    else:
-                        print(
-                            f"File {name} changed. Updating {str(files_to_listen[val.index]['path_to_copy'])}"
-                        )
-
-                        copyfile(
-                            files_to_listen[val.index]["path"],
-                            files_to_listen[val.index]["path_to_copy"],
-                        )
-
                     val.change_time = (
                         files_to_listen[val.index]["path_to_copy"].stat().st_mtime
                     )
 
-                    callback = files_to_listen[val.index]["callback"]
-                    if callback is not None:
-                        callback()
+                    call_listener(files_to_listen[val.index])
         print("Parent process ended, exiting from listener...")
     except KeyboardInterrupt:
         print("Exiting from listener...")
@@ -216,7 +214,9 @@ parser.add_argument("--dev", dest="dev", action="store_true")
 args = parser.parse_args()
 if args.dev:
     if args.listen != 0:
-        print("WARNING: setup.py was ran with both --dev and -l=PID, which is unsupported, ignoring -l=PID.")
+        print(
+            "WARNING: setup.py was ran with both --dev and -l=PID, which is unsupported, ignoring -l=PID."
+        )
     dev()
 elif args.listen == 0:
     main()

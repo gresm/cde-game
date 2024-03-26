@@ -7,7 +7,7 @@ class RunnerAbstr:
     def appendLine(self, text):
         pass
 
-    def forceReload():
+    def forceUpdate(self):
         pass
 
 
@@ -17,7 +17,7 @@ runner = cast(RunnerAbstr, gi.get_runner())
 def setup():
     gi.set_value("showLoadPrompt", False, True)
     gi.set_value("names", [])
-    runner.forceReload()
+    runner.forceUpdate()
 
 
 def hook(name: str):

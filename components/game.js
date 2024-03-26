@@ -277,7 +277,7 @@ class SkulptRunner extends Component {
     }
 
     *iterLines() {
-        if (this.state["toPrint"].length - 1 == 0) return;
+        if (this.state["toPrint"].length == 0) return;
 
         for (let i = 0; i < this.state["toPrint"].length - 1; i++)
             yield (

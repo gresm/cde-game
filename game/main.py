@@ -9,8 +9,5 @@ def step():
     gamejs.print_line("Hello World!")
 
 
-gamejs.gi.set_hook("step", step)
-
-
 def reset():
     global game_runner

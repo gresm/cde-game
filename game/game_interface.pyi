@@ -15,3 +15,7 @@ def get_value(name, use_state: bool = False) -> object:
 
 def get_runner() -> object:
     pass
+
+
+def _debug(value):
+    pass
