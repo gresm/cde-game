@@ -13,14 +13,6 @@ import {
 import { loadScriptsInQueue } from "../utils/scriptLoader";
 import skulptModules from "../generated/skulpt-extra";
 
-function generateNames(num) {
-    var ret = [];
-    for (const v of Array(num).keys()) {
-        ret.push(String.fromCharCode(97 + v));
-    }
-    return ret;
-}
-
 /**
  * @type {object}
  */
@@ -67,6 +59,7 @@ class TypingContextProvider extends Component {
             resetState: this.resetState.bind(this),
             setValue: this.setValue.bind(this),
             getValue: this.getValue.bind(this),
+            names: []
         };
 
         /**
@@ -253,23 +246,23 @@ class SkulptRunner extends Component {
     }
 
     progressGame() {
-        /*this.setupInput(*/
         Sk.gameInterface.hook("step");
-        /*);*/
+        this.setupInput();
     }
 
-    setupInput(names) {
-        // TODO: fill it.
-        if (names.length < 1) {
+    setupInput() {
+        if (this.context.names.length == 0) {
             this.context.setValue("awaitingInput", false);
             return;
         }
-        if (names.length == 1) {
-            this.progressGame();
+
+        if (this.context.names.length == 1) {
+            this.context.setValue("awaitingInput", false);
+            setTimeout(this.progressGame.bind(this));
             return;
         }
+
         this.context.setValue("awaitingInput", true);
-        this.context.setValue("names", generateNames(names));
     }
 
     onFinishedTyping(userInput) {

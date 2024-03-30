@@ -1,6 +1,9 @@
 import game_interface as gi
 import hstt_runner
-from typing import cast
+from typing import cast, List, Optional
+
+
+_NAMES: List[str] = []
 
 
 class RunnerAbstr:
@@ -29,6 +32,27 @@ def hook(name: str):
 
 def print_line(text: str):
     runner.appendLine(text)
+
+
+def _set_options(options: List[str]):
+    gi.set_value("names", options)
+
+
+def _get_user_input():
+    return gi.get_value("userInput", True)
+
+
+def set_options(options: List[str]):
+    global _NAMES
+    _set_options(options)
+    _NAMES = options
+
+
+def get_user_input() -> Optional[str]:
+    ret = _get_user_input()
+    if ret == -1:
+        return None
+    return _NAMES[ret]
 
 
 step_hook = hook("step")
