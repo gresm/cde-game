@@ -4,7 +4,7 @@ var $builtinmodule = function () {
 
     Sk.gameInterface.hooks = {};
 
-    Sk.gameInterface.hook = function(name) {
+    Sk.gameInterface.hook = function (name) {
         if (Sk.gameInterface.hooks[name] !== undefined) {
             Sk.misceval.callsimArray(Sk.gameInterface.hooks[name], []);
         }
@@ -52,22 +52,36 @@ var $builtinmodule = function () {
         Sk.gameInterface.hooks[Sk.ffi.toJsString(name)] = hook;
     });
 
-    mod.set_value = new Sk.builtin.func(function set_value(name, value, use_state) {
+    mod.set_value = new Sk.builtin.func(function set_value(
+        name,
+        value,
+        use_state,
+    ) {
         Sk.abstr.checkArgsLen("set_value", arguments.length, 2, 3);
         if (use_state !== undefined && Sk.ffi.isTrue(use_state)) {
-            Sk.gameInterface.runner.state[Sk.ffi.toJsString(name)] = Sk.ffi.remapToJs(value);
+            Sk.gameInterface.runner.state[Sk.ffi.toJsString(name)] =
+                Sk.ffi.remapToJs(value);
             Sk.gameInterface.runner.setState(Sk.gameInterface.runner.state);
         } else {
-            Sk.gameInterface.runner.context.setValue(Sk.ffi.toJsString(name), Sk.ffi.remapToJs(value));
+            Sk.gameInterface.runner.context.setValue(
+                Sk.ffi.toJsString(name),
+                Sk.ffi.remapToJs(value),
+            );
         }
     });
 
     mod.get_value = new Sk.builtin.func(function get_value(name, use_state) {
         Sk.abstr.checkArgsLen("set_value", arguments.length, 1, 2);
         if (use_state !== undefined && Sk.ffi.isTrue(use_state)) {
-            return Sk.ffi.remapToPy(Sk.gameInterface.runner.state[Sk.ffi.toJsString(name)]);
+            return Sk.ffi.remapToPy(
+                Sk.gameInterface.runner.state[Sk.ffi.toJsString(name)],
+            );
         } else {
-            return Sk.ffi.remapToPy(Sk.gameInterface.runner.context.getValue(Sk.ffi.toJsString(name)));
+            return Sk.ffi.remapToPy(
+                Sk.gameInterface.runner.context.getValue(
+                    Sk.ffi.toJsString(name),
+                ),
+            );
         }
     });
 

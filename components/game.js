@@ -59,7 +59,7 @@ class TypingContextProvider extends Component {
             resetState: this.resetState.bind(this),
             setValue: this.setValue.bind(this),
             getValue: this.getValue.bind(this),
-            names: []
+            names: [],
         };
 
         /**
@@ -274,7 +274,8 @@ class SkulptRunner extends Component {
 
         for (let i = 0; i < this.state["toPrint"].length - 1; i++)
             yield (
-                <a key={i}>{this.state["toPrint"][i]}
+                <a key={i}>
+                    {this.state["toPrint"][i]}
                     <br />
                 </a>
             );

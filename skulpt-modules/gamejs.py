@@ -1,7 +1,8 @@
-import game_interface as gi
-import hstt_runner
-from typing import cast, List, Optional
+from typing import List, Optional, cast
 
+import game_interface as gi
+
+import hstt_runner
 
 _NAMES: List[str] = []
 
@@ -27,6 +28,7 @@ def hook(name: str):
     def inner(func):
         gi.set_hook(name, func)
         return func
+
     return inner
 
 
