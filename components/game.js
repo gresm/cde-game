@@ -30,7 +30,7 @@ function validateUserInput(text, names) {
     }
     let parsed = parseInt(text);
     if (1 <= parsed <= names.length) {
-        return parsed;
+        return parsed - 1;
     }
     return -1;
 }
@@ -74,11 +74,11 @@ class TypingContextProvider extends Component {
         this.triggersOnFinishedTyping = [];
     }
 
-    refreshState() {
+    refreshState(callback) {
         this.setState({
             ...this.defaultState,
             ...this.userState,
-        });
+        }, callback);
     }
 
     bindOnFinishedTyping(func) {
@@ -91,9 +91,9 @@ class TypingContextProvider extends Component {
         });
     }
 
-    setValue(key, value) {
+    setValue(key, value, callback) {
         this.userState[key] = value;
-        this.refreshState();
+        this.refreshState(callback);
     }
 
     getValue(key) {
@@ -247,10 +247,9 @@ class SkulptRunner extends Component {
 
     progressGame() {
         Sk.gameInterface.hook("step");
-        this.setupInput();
     }
 
-    setupInput() {
+    endStep() {
         if (this.context.names.length == 0) {
             this.context.setValue("awaitingInput", false);
             return;
@@ -294,15 +293,18 @@ class SkulptRunner extends Component {
         this.forceUpdate();
     }
 
+    clearText() {
+        this.setState({ ...this.state, toPrint: [] });
+    }
+
     onAfterFullLoad() {
         try {
-            var code = Sk.importMainWithBody(
+            globalThis.codeRan = Sk.importMainWithBody(
                 "__main__",
                 false,
                 this.code,
                 true,
             );
-            Sk.gameInterface.stepFunc = code.tp$getattr(Sk.builtin.str("step"));
             this.context.onFinishedTyping(this.onFinishedTyping.bind(this));
             this.progressGame();
         } catch (err) {

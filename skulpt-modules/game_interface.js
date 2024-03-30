@@ -6,8 +6,14 @@ var $builtinmodule = function () {
 
     Sk.gameInterface.hook = function (name) {
         if (Sk.gameInterface.hooks[name] !== undefined) {
-            Sk.misceval.callsimArray(Sk.gameInterface.hooks[name], []);
+            Sk.gameInterface.hooks[name]();
         }
+    };
+
+    Sk.gameInterface.wrapPyFunc = function (pyFunc) {
+        return () => {
+            Sk.misceval.callsimArray(pyFunc, []);
+        };
     };
 
     var mod = {};
@@ -24,9 +30,13 @@ var $builtinmodule = function () {
         return Sk.ffi.proxy(Sk.gameInterface.runner);
     });
 
-    mod._debug = new Sk.builtin.func(function _debug(value) {
-        Sk.abstr.checkArgsLen("_debug", arguments.length, 1, 1);
-        console.log(value);
+    mod._debug = new Sk.builtin.func(function _debug(value, convert) {
+        Sk.abstr.checkArgsLen("_debug", arguments.length, 1, 2);
+        if (convert !== undefined && Sk.ffi.isTrue(convert)) {
+            console.log(Sk.ffi.remapToJs(value));
+        } else {
+            console.log(value);
+        }
     });
 
     /*mod.game_div = new Sk.builtin.func(function () {
@@ -49,15 +59,17 @@ var $builtinmodule = function () {
 
     mod.set_hook = new Sk.builtin.func(function set_hook(name, hook) {
         Sk.abstr.checkArgsLen("set_hook", arguments.length, 2, 2);
-        Sk.gameInterface.hooks[Sk.ffi.toJsString(name)] = hook;
+        Sk.gameInterface.hooks[Sk.ffi.toJsString(name)] =
+            Sk.gameInterface.wrapPyFunc(hook);
     });
 
     mod.set_value = new Sk.builtin.func(function set_value(
         name,
         value,
         use_state,
+        callback,
     ) {
-        Sk.abstr.checkArgsLen("set_value", arguments.length, 2, 3);
+        Sk.abstr.checkArgsLen("set_value", arguments.length, 2, 4);
         if (use_state !== undefined && Sk.ffi.isTrue(use_state)) {
             Sk.gameInterface.runner.state[Sk.ffi.toJsString(name)] =
                 Sk.ffi.remapToJs(value);
@@ -66,6 +78,7 @@ var $builtinmodule = function () {
             Sk.gameInterface.runner.context.setValue(
                 Sk.ffi.toJsString(name),
                 Sk.ffi.remapToJs(value),
+                callback ? Sk.gameInterface.wrapPyFunc(callback) : callback,
             );
         }
     });

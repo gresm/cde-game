@@ -1,11 +1,11 @@
-from typing import List, Optional, cast
+from typing import List, cast
 
 import game_interface as gi
 
 import hstt_runner
 
-_NAMES: List[str] = []
 
+_current_options = []
 
 class RunnerAbstr:
     def appendLine(self, text):
@@ -14,14 +14,20 @@ class RunnerAbstr:
     def forceUpdate(self):
         pass
 
+    def clearText(self):
+        pass
 
-runner = cast(RunnerAbstr, gi.get_runner())
+    def endStep(self):
+        pass
+
+
+_sk_runner = cast(RunnerAbstr, gi.get_runner())
 
 
 def setup():
     gi.set_value("showLoadPrompt", False, True)
     gi.set_value("names", [])
-    runner.forceUpdate()
+    _sk_runner.forceUpdate()
 
 
 def hook(name: str):
@@ -33,29 +39,41 @@ def hook(name: str):
 
 
 def print_line(text: str):
-    runner.appendLine(text)
+    _sk_runner.appendLine(text)
 
 
-def _set_options(options: List[str]):
-    gi.set_value("names", options)
-
-
-def _get_user_input():
-    return gi.get_value("userInput", True)
+def print_option(text: str, _goto: str):
+    # TODO: implement
+    print_line(text)
 
 
 def set_options(options: List[str]):
-    global _NAMES
-    _set_options(options)
-    _NAMES = options
+    global _current_options
+    _current_options = options
 
 
-def get_user_input() -> Optional[str]:
-    ret = _get_user_input()
-    if ret == -1:
-        return None
-    return _NAMES[ret]
+def get_user_input() -> int:
+    return cast(int, gi.get_value("userInput", True))
+
+
+def just_step():
+    set_options([""])
+
+
+def stop():
+    set_options([])
+
+
+def end_step():
+    gi.set_value("names", _current_options, False, _sk_runner.endStep)
+
+
+@hook("reset")
+def reset():
+    global runner
+    runner = hstt_runner.HSTTRunner(hstt_runner.Story.parse(gi.get_story()))
+    _sk_runner.clearText()
 
 
 step_hook = hook("step")
-story = hstt_runner.Story.parse(gi.get_story())
+runner = hstt_runner.HSTTRunner(hstt_runner.Story.parse(gi.get_story()))

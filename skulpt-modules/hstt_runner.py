@@ -1,6 +1,7 @@
 """
 Utility script to run HSTT formatted json files.
 """
+
 from typing import Literal, Optional, Union
 
 from typing_extensions import NotRequired, TypeAlias, TypedDict, TypeGuard
@@ -222,35 +223,45 @@ class Location:
         self.text_line: int = -1
         self.selected_option: int = -1
 
-    def enter_node_text(self) -> TypeGuard["_TextLocation"]:
-        if (
-            self.loc_type != LOCATION_NODE
-            or not isinstance(self.value, StoryNode)
-            or not len(self.value.text)
-        ):
+    def is_node_text(self, _self) -> TypeGuard["_TextLocation"]:
+        return (
+            self.loc_type == LOCATION_TEXT
+            and isinstance(self.value, TextLine)
+            and bool(self.parent_node)
+        )
+
+    def is_node_options(self, _self) -> TypeGuard["_OptionsLocation"]:
+        return (
+            self.loc_type == LOCATION_OPTION
+            and isinstance(self.value, NodeOptions)
+            and bool(len(self.value))
+        )
+
+    def is_finnish(self, _self) -> TypeGuard["_EndLocation"]:
+        return self.loc_type == LOCATION_END
+
+    def enter_node_text(self, _self) -> TypeGuard["_TextLocation"]:
+        if self.loc_type != LOCATION_NODE or not isinstance(self.value, StoryNode):
             return False
 
         self.parent_node = self.value
         self.loc_type = LOCATION_TEXT
-        self.text_line = 0
-        self.value = self.parent_node.text.text[self.text_line]
+        self.text_line = -1
+        # self.value = self.parent_node.text.text[self.text_line]
         return True
 
-    def advance_text(self) -> TypeGuard["_TextLocation"]:
-        if (
-            self.loc_type != LOCATION_TEXT
-            or not isinstance(self.value, TextLine)
-            or not self.parent_node
-        ):
+    def advance_text(self, _self) -> TypeGuard["_TextLocation"]:
+        if self.loc_type != LOCATION_TEXT or not self.parent_node:
             return False
 
         self.text_line += 1
         if self.text_line >= len(self.parent_node.text):
+            self.exit_node_text(self)
             return False
         self.value = self.parent_node.text.text[self.text_line]
         return True
 
-    def exit_node_text(self) -> TypeGuard["_NodeLocation"]:
+    def exit_node_text(self, _self) -> TypeGuard["_NodeLocation"]:
         if (
             self.loc_type != LOCATION_TEXT
             or not isinstance(self.value, TextLine)
@@ -265,7 +276,7 @@ class Location:
 
         return True
 
-    def enter_node_options(self) -> TypeGuard["_OptionsLocation"]:
+    def enter_node_options(self, _self) -> TypeGuard["_OptionsLocation"]:
         if (
             self.loc_type != LOCATION_NODE
             or not isinstance(self.value, StoryNode)
@@ -274,12 +285,13 @@ class Location:
             return False
 
         self.parent_node = self.value
+        self.value = self.value.options
         self.loc_type = LOCATION_OPTION
         self.selected_option = -1
 
         return True
 
-    def select_option(self, option: int) -> TypeGuard["_OptionsLocation"]:
+    def select_option(self, option: int):
         if (
             self.loc_type != LOCATION_OPTION
             or not isinstance(self.value, NodeOptions)
@@ -293,7 +305,7 @@ class Location:
         self.selected_option = option
         return True
 
-    def leave_node_options(self) -> TypeGuard["_NodeLocation"]:
+    def leave_node_options(self, _self) -> TypeGuard["_NodeLocation"]:
         if (
             self.loc_type != LOCATION_OPTION
             or not isinstance(self.value, NodeOptions)
@@ -307,10 +319,13 @@ class Location:
 
     def set_node(self, node: StoryNode) -> TypeGuard["_NodeLocation"]:
         self.value = node
+        self.parent_node = None
+        self.selected_option = -1
+        self.text_line = -1
         self.loc_type = LOCATION_NODE
         return True
 
-    def has_goto(self) -> TypeGuard["_NodeLocation"]:
+    def has_goto(self, _self) -> TypeGuard["_NodeLocation"]:
         return (
             self.loc_type == LOCATION_NODE
             and isinstance(self.value, StoryNode)
@@ -355,19 +370,27 @@ class HSTTRunner:
     def __init__(self, story: Story):
         self.story = story
         self.location = Location(self.story.entry_point, LOCATION_NODE)
+        self._first_step = True
+
+    def goto(self, to: str):
+        if to in self.story.nodes:
+            self.location.set_node(self.story.nodes[to])
 
     def step(self):
         location = self.location
-        # TODO: other cases than LOCATION_NODE
-        if location.loc_type == LOCATION_NODE:
-            if not location.enter_node_text():
-                if (
-                    location.has_goto()
-                    and isinstance(location.value, StoryNode)
-                    and location.value.goto is not None
-                ):
-                    location.set_node(self.story.nodes[location.value.goto])
-                    return location
-                elif location.enter_node_options():
-                    # TODO: what to do if there is no more text to show and there is no more goto? (choices and end).
-                    pass
+        if self._first_step:
+            self._first_step = False
+            return location
+
+        if location.is_node_text(location) or location.enter_node_text(location):
+            if not location.advance_text(location):
+                location.exit_node_text(location)
+                location.enter_node_options(location)
+                if not location.is_node_options(self):
+                    if location.has_goto(location):
+                        self.goto(location.value.goto or " ")
+                    else:
+                        location.finnish()
+        elif location.is_node_options(location):
+            self.goto(location.value.options[location.selected_option].goto)
+        return location
