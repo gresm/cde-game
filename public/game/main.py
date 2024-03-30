@@ -22,5 +22,9 @@ def step():
         gamejs.stop()
     else:
         gamejs.just_step()
-    gamejs.gi._debug(location)
     gamejs.end_step()
+
+
+@gamejs.after_input_hook
+def after_input():
+    gamejs.runner.location.selected_option = gamejs.get_user_input()

@@ -76,4 +76,5 @@ def reset():
 
 
 step_hook = hook("step")
+after_input_hook = hook("after_input")
 runner = hstt_runner.HSTTRunner(hstt_runner.Story.parse(gi.get_story()))

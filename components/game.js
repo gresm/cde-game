@@ -75,19 +75,22 @@ class TypingContextProvider extends Component {
     }
 
     refreshState(callback) {
-        this.setState({
-            ...this.defaultState,
-            ...this.userState,
-        }, callback);
+        this.setState(
+            {
+                ...this.defaultState,
+                ...this.userState,
+            },
+            callback,
+        );
     }
 
     bindOnFinishedTyping(func) {
         this.triggersOnFinishedTyping.push(func);
     }
 
-    callOnFinishedTyping(text) {
+    callOnFinishedTyping(text, realText) {
         this.triggersOnFinishedTyping.forEach((element) => {
-            element(text);
+            element(text, realText);
         });
     }
 
@@ -124,6 +127,7 @@ class GameInteractveSelection extends InteractveSelection {
         }
         if (ev.key.length === 1) {
             this.updateState("text", this.state.text + ev.key);
+            super.onKeyPressed();
         } else if (ev.key === "Backspace") {
             this.updateState(
                 "text",
@@ -145,7 +149,7 @@ class GameInteractveSelection extends InteractveSelection {
             return;
         }
         this.updateState("text", "");
-        this.context.triggerFinishedTyping(userInput);
+        this.context.triggerFinishedTyping(userInput, text);
     }
 
     componentDidMount() {
@@ -264,8 +268,20 @@ class SkulptRunner extends Component {
         this.context.setValue("awaitingInput", true);
     }
 
-    onFinishedTyping(userInput) {
-        this.setState({ ...this.state, userInput: userInput });
+    onFinishedTyping(userInput, realInput) {
+        this.setState(
+            {
+                ...this.state,
+                userInput: userInput,
+                toPrint: this.state.toPrint
+                    .slice(0, -1)
+                    .concat([this.state.toPrint.at(-1) + realInput]),
+            },
+            () => {
+                Sk.gameInterface.hook("after_input");
+                this.progressGame();
+            },
+        );
     }
 
     *iterLines() {
