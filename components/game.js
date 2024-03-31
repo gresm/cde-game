@@ -1,6 +1,6 @@
 "use strict";
 
-import React, { Component, createContext } from "react";
+import React, { Component, createContext, useContext, StrictMode } from "react";
 import PropTypes from "prop-types";
 
 import {
@@ -160,6 +160,42 @@ class GameInteractveSelection extends InteractveSelection {
     }
 }
 
+function Line({ text, textType, moveTo }) {
+    const context = useContext(typingContext);
+
+    if (textType === 0) {
+        return <a>{text}</a>;
+    } else if (textType === 1) {
+        return (
+            <a>
+                <span style={{ backgroundColor: "orangered" }}>{text}</span>
+            </a>
+        );
+    } else if (textType === 2) {
+        return (
+            <a
+                style={{ textDecorationLine: "underline" }}
+                onClick={() => {
+                    if (context.names.indexOf(moveTo) !== -1) {
+                        context.triggerFinishedTyping(
+                            context.names.indexOf(moveTo),
+                            moveTo,
+                        );
+                    }
+                }}
+            >
+                {text}
+            </a>
+        );
+    }
+}
+
+Line.propTypes = {
+    text: PropTypes.string,
+    textType: PropTypes.number,
+    moveTo: PropTypes.string,
+};
+
 class SkulptRunner extends Component {
     skulpt = "../skulpt.min.js";
     skulptSdt = "../skulpt-stdlib.js";
@@ -261,7 +297,7 @@ class SkulptRunner extends Component {
 
         if (this.context.names.length == 1) {
             this.context.setValue("awaitingInput", false);
-            setTimeout(this.progressGame.bind(this));
+            setTimeout(this.progressGame.bind(this), 500);
             return;
         }
 
@@ -273,9 +309,12 @@ class SkulptRunner extends Component {
             {
                 ...this.state,
                 userInput: userInput,
-                toPrint: this.state.toPrint
-                    .slice(0, -1)
-                    .concat([this.state.toPrint.at(-1) + realInput]),
+                toPrint: this.state.toPrint.slice(0, -1).concat([
+                    {
+                        ...this.state.toPrint.at(-1),
+                        text: this.state.toPrint.at(-1).text + realInput,
+                    },
+                ]),
             },
             () => {
                 Sk.gameInterface.hook("after_input");
@@ -287,26 +326,45 @@ class SkulptRunner extends Component {
     *iterLines() {
         if (this.state["toPrint"].length == 0) return;
 
-        for (let i = 0; i < this.state["toPrint"].length - 1; i++)
+        for (let i = 0; i < this.state["toPrint"].length - 1; i++) {
+            let line = this.state["toPrint"][i];
             yield (
-                <a key={i}>
-                    {this.state["toPrint"][i]}
+                <div key={i}>
+                    <Line
+                        text={line.text}
+                        textType={line.textType}
+                        moveTo={line.moveTo}
+                    />
                     <br />
-                </a>
+                </div>
             );
+        }
+        let line = this.state["toPrint"][this.state["toPrint"].length - 1];
 
         yield (
             <InlineDiv key="lastLine">
-                {this.state["toPrint"][this.state["toPrint"].length - 1]}
+                <Line
+                    text={line.text}
+                    textType={line.textType}
+                    moveTo={line.moveTo}
+                />
                 <GameInteractveSelection />
                 <Cursor />
             </InlineDiv>
         );
     }
 
-    appendLine(text) {
-        this.state["toPrint"].push(text);
-        this.forceUpdate();
+    appendLine(line) {
+        this.state["toPrint"].push({
+            text: line[0],
+            textType: line[1],
+            moveTo: line[2],
+        });
+        this.forceUpdate(() => {
+            if (line[1] === 1) {
+                setTimeout(() => globalThis.alert(line[0]), 100);
+            }
+        });
     }
 
     clearText() {
@@ -397,12 +455,14 @@ SkulptRunner.propTypes = { name: PropTypes.string, story: PropTypes.any };
 
 export function Game({ name, story }) {
     return (
-        <Container id="game-wrappper">
-            <ConsoleLine isInput={true}>./run {name}</ConsoleLine>
-            <TypingContextProvider>
-                <SkulptRunner story={story} name={name} />
-            </TypingContextProvider>
-        </Container>
+        <StrictMode>
+            <Container id="game-wrappper">
+                <ConsoleLine isInput={true}>./run {name}</ConsoleLine>
+                <TypingContextProvider>
+                    <SkulptRunner story={story} name={name} />
+                </TypingContextProvider>
+            </Container>
+        </StrictMode>
     );
 }
 

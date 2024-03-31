@@ -10,7 +10,10 @@ def step():
     location = gamejs.runner.step()
 
     if location.is_node_text(location):
-        gamejs.print_line(location.value.text)
+        if location.value.type == "alert":
+            gamejs.print_alert(location.value.text)
+        else:
+            gamejs.print_line(location.value.text)
         gamejs.just_step()
     elif location.is_node_options(location):
         for idx, op in enumerate(location.value.options):

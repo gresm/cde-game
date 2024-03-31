@@ -8,7 +8,7 @@ import hstt_runner
 _current_options = []
 
 class RunnerAbstr:
-    def appendLine(self, text):
+    def appendLine(self, line):
         pass
 
     def forceUpdate(self):
@@ -39,12 +39,17 @@ def hook(name: str):
 
 
 def print_line(text: str):
-    _sk_runner.appendLine(text)
+    _sk_runner.appendLine([text, 0, ""])
+
+
+def print_alert(text: str):
+    # TODO: implement
+    _sk_runner.appendLine([text, 1, ""])
 
 
 def print_option(text: str, _goto: str):
     # TODO: implement
-    print_line(text)
+    _sk_runner.appendLine([text, 2, _goto])
 
 
 def set_options(options: List[str]):
